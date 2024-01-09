@@ -1,5 +1,5 @@
 {
-  "name": "@techvootsolutions/dragandropvue",
+  "name": "@techvootsolutions/drag-and-drop-vue",
   "description": "Plugin for Drag and Drop",
   "version": "0.0.1",
   "private": false,
@@ -12,8 +12,6 @@
   "dependencies": {
     "@vueuse/core": "^10.5.0",
     "core-js": "^3.8.3",
-    "drag-n-drop-vue": "^0.1.0",
-    "dragandropvue": "^0.1.9",
     "vue": "^3.3.7"
   },
   "devDependencies": {
@@ -56,12 +54,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tvshreyanshi/drag-and-drop-vue.git"
+    "url": "git+https://github.com/techvootsolutions/drag-and-drop-vue.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tvshreyanshi/drag-and-drop-vue/issues"
+    "url": "https://github.com/techvootsolutions/drag-and-drop-vue/issues"
   },
-  "homepage": "https://github.com/tvshreyanshi/drag-and-drop-vue#readme"
+  "homepage": "https://github.com/techvootsolutions/drag-and-drop-vue#readme"
 }
