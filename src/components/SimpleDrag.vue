@@ -3,7 +3,7 @@
     <ul class="tvd__column__list">
       <li
         class="tvd__column__item"
-        v-for="(data, index) in response.data"
+        v-for="(data, index) in response"
         :key="index"
       >
       <!-- section title -->
@@ -158,7 +158,7 @@ let addinglist = ref(null);
 
 const props = defineProps({
   responseData: {
-    type: Object,
+    type: Array,
     required: true,
   },
   addCardTitle: {
@@ -236,18 +236,18 @@ const closeNewList = () => {
 };
 const addCard = (index) => {
   if (newCard.value.title.trim() !== "") {
-    if (!response.value.data[index]) {
-      response.value.data[index] = { data: [] };
+    if (!response.value[index]) {
+      response.value[index] = { data: [] };
     }
-    response.value.data[index].data.push({
+    response.value[index].data.push({
       title: `${newCard.value.title}`,
       description: `<p>${newCard.value.description}</p>`,
     });
     emit("add-card", {
       index: index,
       value:
-        response.value.data[index].data[
-          response.value.data[index].data.length - 1
+        response.value[index].data[
+          response.value[index].data.length - 1
         ],
       updatedValue: response.value,
     });
@@ -258,10 +258,10 @@ const addCard = (index) => {
 };
 const addList = () => {
   if (newList.value.listTitle.trim() !== "") {
-    if (!response.value.data) {
-      response.value.data = { data: [] };
+    if (!response.value) {
+      response.value = { data: [] };
     }
-    response.value.data.push({
+    response.value.push({
       title: `${newList.value.listTitle}`,
       data: [],
     });
@@ -293,7 +293,7 @@ const internalAllowDrop = (event) => {
 const internalDrop = (targetArrayIndex, targetIndex) => {
   if (draggedItem.value === null || draggedArray.value === null) return;
   if (draggedArray.value === targetArrayIndex) {
-    const targetArray = response.value.data[targetArrayIndex];
+    const targetArray = response.value[targetArrayIndex];
     const draggedItemObj = targetArray.data.splice(draggedItem.value, 1)[0];
     targetArray.data.splice(targetIndex, 0, draggedItemObj);
   }
@@ -303,7 +303,7 @@ const dropItem = (targetArrayIndex, event) => {
   event.preventDefault();
   if (draggedItem.value === null || draggedArray.value === null) return;
 
-  const targetArray = response.value.data[targetArrayIndex];
+  const targetArray = response.value[targetArrayIndex];
   const targetList = event.target.parentElement;
   if (targetList && targetList.children !== null) {
     const targetIndex = Array.from(targetList && targetList.children).indexOf(
@@ -312,14 +312,14 @@ const dropItem = (targetArrayIndex, event) => {
     if (targetIndex === targetList && targetList.children.length - 1) {
       const sourceArrayIndex = draggedArray.value;
       if (sourceArrayIndex !== targetArrayIndex) {
-        const sourceArray = response.value.data[sourceArrayIndex];
+        const sourceArray = response.value[sourceArrayIndex];
         targetArray.data.push(sourceArray.data[draggedItem.value]);
         sourceArray.data.splice(draggedItem.value, 1);
       }
     } else {
       const sourceArrayIndex = draggedArray.value;
       if (sourceArrayIndex !== targetArrayIndex) {
-        const sourceArray = response.value.data[sourceArrayIndex];
+        const sourceArray = response.value[sourceArrayIndex];
         targetArray.data.splice(
           targetIndex,
           0,

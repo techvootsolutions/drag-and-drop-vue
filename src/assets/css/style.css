@@ -82,12 +82,18 @@ section {
   line-clamp: 2;
   -webkit-box-orient: vertical;
 }
+.tvd__description p {
+  margin: 0;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 21px;
+}
 
 .tvd__card__field {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 0.75rem;
+  margin-bottom: 10px;
 }
 
 .tvd__card__field span {
@@ -119,17 +125,20 @@ section {
   display: inline-block;
   margin-left: 0.2rem;
   font-family: 'Poppins', sans-serif;
+  cursor: pointer;
 }
 
 .tvd__delete_card {
   padding: 0;
   border: 0;
   float: right;
+  cursor: pointer;
 }
 
 .tvd__edit_card {
   float: right;
   border: 0;
+  cursor: pointer;
 }
 
 .tvd__edit_card, .tvd__delete_card{
@@ -213,6 +222,7 @@ ul {
 
 .tvd__add-btn {
   border: none;
+  cursor: pointer;
   width: 100%;
   border-radius: 10px;
   box-shadow: 0 1px 0 rgba(9, 45, 66, 0.25);
@@ -363,19 +373,27 @@ hr {
   margin-top: 10px;
 }
 
-.tvd__show_title {
+.tvd__show_card {
   display: flex;
   align-items: baseline;
 }
 
-.tvd__show_title h6 {
+.tvd__show_card h6 {
+  margin: 0;
+  margin-bottom: 10px;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
 }
 
-.tvd__show_title span {
+.tvd__show_card span {
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
+  font-size: 14px;
+}
+.tvd__show_card span b {
+  margin-right: 5px;
 }
 .tvd__modal-open .tvd__column__list {
   overflow: hidden;
@@ -403,6 +421,7 @@ hr {
   align-items: center;
   justify-content: center;
   padding: 8px 10px;
+  cursor: pointer;
 }
 .tvd__cursor-pointer{
   cursor: pointer;

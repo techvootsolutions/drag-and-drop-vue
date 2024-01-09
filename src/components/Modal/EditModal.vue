@@ -15,19 +15,19 @@
         <div class="tvd__modal-body">
           <div v-if="!isEdit">
             <div
-              class="tvd__show_title"
+              class="tvd__show_card"
               v-if="getData.event && getData.event.title"
             >
               <h6>{{ getData.event.title }}</h6>
             </div>
             <div
-              class="tvd__show_title"
+              class="tvd__show_card"
               v-if="getData.event && getData.event.deadlineDate"
             >
-              <span>DeadLine:</span>
+              <span><b>DeadLine: </b></span>
               <span>{{ getData.event.deadlineDate }}</span>
             </div>
-            <div v-if="getData.event && getData.event.description">
+            <div class="tvd__show_card" v-if="getData.event && getData.event.description">
               <span v-html="getData.event.description"></span>
             </div>
             <div
@@ -146,68 +146,7 @@ const emit = defineEmits(["modal-close"], ["edit-data"]);
 
 const target = ref(null);
 
-// const handleFileChange = (event) => {
-//   const selectedFile = event.target.files;
-//   if (selectedFile && selectedFile.length > 0) {
-//     const newAttachments = [];
-//     Array.from(selectedFile).forEach((file) => {
-//       let type = file.type;
-//       const reader = new FileReader();
-//       reader.onload = () => {
-//         newAttachments.push({
-//           type,
-//           file,
-//           dataUrl: reader.result,
-//         });
-//         if (newAttachments.length === selectedFile.length) {
-//           attachment.value = newAttachments;
-//         }
-//       };
-//       reader.readAsDataURL(file);
-//     });
-//   } else {
-//     console.error("Selected files is not an array:", selectedFile);
-//   }
-// };
 
-// const handleFileChange = (event) => {
-//   const selectedFiles = event.target.files;
-
-//   if (selectedFiles && selectedFiles.length > 0) {
-//     const newAttachments = [];
-
-//     for (const file of selectedFiles) {
-//       const type = file.type;
-//       const reader = new FileReader();
-//       console.log('type', type);
-//       if (type.startsWith("image/")) {
-//         // Attempt to handle HEIF as an image
-//         reader.onload = () => {
-//           newAttachments.push({
-//             type,
-//             file,
-//             dataUrl: reader.result,
-//           });
-
-//           if (newAttachments.length === selectedFiles.length) {
-//             attachment.value = newAttachments;
-//           }
-//         };
-
-//         if (type === "image/heif" || type === "image/heic") {
-//           // Treat HEIF as an image, though this may not work for all cases
-//           // convertHeifOrHeicToJpeg(file, reader);
-//         } else {
-//           reader.readAsDataURL(file);
-//         }
-//       } else {
-//         console.warn(`Unsupported file type: ${type}`);
-//       }
-//     }
-//   } else {
-//     console.error("Selected files are not an array or empty:", selectedFiles);
-//   }
-// };
 const handleFileChange = (event) => {
   const selectedFiles = event.target.files;
 
