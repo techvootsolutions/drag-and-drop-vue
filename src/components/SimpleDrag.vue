@@ -1,81 +1,85 @@
 <template>
-  <section>
+  <section v-if="response">
     <ul class="tvd__column__list">
       <li
         class="tvd__column__item"
         v-for="(data, index) in response"
         :key="index"
       >
-      <!-- section title -->
+        <!-- section title -->
         <div class="tvd__column__title--wrapper">
-          <h2>{{ data.title }}</h2>
+          <h2 v-if="data.title">{{ data.title }}</h2>
 
-          <i
-            class="tvd__column__item--cta fa-solid fa-plus tvd__cursor-pointer"
-            @click.prevent="showAddCardUI(index)"
-          ></i>
-          <!-- <i class="tvd__icons fa-solid fa-ellipsis"></i> -->
+          <div>
+            <i
+              class="tvd__column__item--cta fa-solid fa-plus tvd__cursor-pointer"
+              @click.prevent="showAddCardUI(index)"
+            ></i>
+            <!-- <i class="tvd__icons fa-solid fa-ellipsis"></i> -->
+          </div>
         </div>
         <ul
           class="tvd__card__list"
+          v-if="data.data"
           @drop.prevent="dropItem(index, $event)"
           @dragover.prevent="allowDrop"
         >
-          <li
-            class="tvd__card__item"
-            v-for="(item, itemindex) in data.data"
-            :key="itemindex"
-            :draggable="true"
-            @dragstart="dragStart(index, itemindex)"
-            @dragover.prevent="internalAllowDrop"
-            @drop.prevent="internalDrop(index, itemindex)"
-          >
-            <div class="tvd__card__field">
-              <!-- card title -->
-              <span
-                v-if="item && item.title"
-                v-html="item.title"
-                class="tvd__card__tag"
-                @click="openModal(item, index, itemindex, false)"
-              ></span>
-              <div>
-                <button
-                  @click="openModal(item, index, itemindex, true)"
-                  class="tvd__edit_card"
-                >
-                  <i class="fa-solid fa-pen-to-square tvd__icons"></i>
-                </button>
-                <button
-                  @click="openDeleteModal(index, itemindex)"
-                  class="tvd__delete_card"
-                >
-                  <i class="tvd__icons fa-solid fa-trash-can"></i>
-                </button>
+          <template v-for="(item, itemindex) in data.data" :key="itemindex">
+            <li
+              class="tvd__card__item"
+              v-if="Object.keys(item).length > 0"
+              :draggable="true"
+              @dragstart="dragStart(index, itemindex)"
+              @dragover.prevent="internalAllowDrop"
+              @drop.prevent="internalDrop(index, itemindex)"
+            >
+              <div class="tvd__card__field">
+                <!-- card title -->
+                <span
+                  v-if="item && item.title"
+                  v-html="item.title"
+                  class="tvd__card__tag"
+                  @click="openModal(item, index, itemindex, false)"
+                ></span>
+                <div>
+                  <button
+                    @click="openModal(item, index, itemindex, true)"
+                    class="tvd__edit_card"
+                  >
+                    <i class="fa-solid fa-pen-to-square tvd__icons"></i>
+                  </button>
+                  <button
+                    @click="openDeleteModal(index, itemindex)"
+                    class="tvd__delete_card"
+                  >
+                    <i class="tvd__icons fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
               </div>
-            </div>
-            <div class="tvd__card__field" v-if="item && item.deadlineDate">
-              <span>{{ item.deadlineDate }}</span>
-            </div>
-            <!-- card description -->
-            <div class="tvd__card__field" v-if="item && item.description">
-              <span class="tvd__description" v-html="item.description"></span>
-            </div>
-            <div class="tvd__card__actions">
-              <li class="tvd__card__actions--wrapper">
-                <!-- <i class="icons fa-solid fa-align-left"></i>
+              <div class="tvd__card__field" v-if="item && item.deadlineDate">
+                <span>{{ item.deadlineDate }}</span>
+              </div>
+              <!-- card description -->
+              <div class="tvd__card__field" v-if="item && item.description">
+                <span class="tvd__description" v-html="item.description"></span>
+              </div>
+              <div class="tvd__card__actions">
+                <li class="tvd__card__actions--wrapper">
+                  <!-- <i class="icons fa-solid fa-align-left"></i>
                 <i class="icons fa-regular fa-comment"></i> -->
-                <div class="tvd__card__avatars">
-                  <li class="tvd__card__avatars--item">
-                    <!-- <img
+                  <div class="tvd__card__avatars">
+                    <li class="tvd__card__avatars--item">
+                      <!-- <img
                       src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuXwdzjy8m5Awd5zZ6GknOv2dVo0xYeHEvJu3JGU3SlXEH7y1WV4GIpgSlAmQIN4a0qBI&usqp=CAU"
                       alt="Man standing near balcony"
                       class="tvd__avatar__image"
                     /> -->
-                  </li>
-                </div>
-              </li>
-            </div>
-          </li>
+                    </li>
+                  </div>
+                </li>
+              </div>
+            </li>
+          </template>
           <li class="tvd__card__item" v-if="addingCard == index">
             <button class="tvd_close_addcard" @click="closeCard()">
               <i class="tvd__icons fa-solid fa-xmark"></i>
@@ -142,6 +146,10 @@
       name="delete-confirmation-modal"
     />
   </section>
+  <section v-else>
+    <slot name="noData" />
+    <p v-if="!$slots.noData">No Data</p>
+  </section>
 </template>
 <script setup>
 import EditModal from "./Modal/EditModal.vue";
@@ -163,11 +171,11 @@ const props = defineProps({
   },
   addCardTitle: {
     type: Text,
-    default: "Add Card"
+    default: "Add Card",
   },
   addSectionTitle: {
     type: Text,
-    default: "Add Section"
+    default: "Add Section",
   },
   isOpenDeleteModal: {
     type: Boolean,
@@ -178,7 +186,13 @@ const props = defineProps({
     default: false,
   },
 });
-const emit = defineEmits(["add-card", "edit-card", "delete-card", "dragstart", "dropItem"]);
+const emit = defineEmits([
+  "add-card",
+  "edit-card",
+  "delete-card",
+  "dragstart",
+  "dropItem",
+]);
 
 const response = ref(props.responseData);
 const isOpenDeleteModal = ref(props.isOpenDeleteModal);
@@ -201,10 +215,14 @@ const openModal = (event, arrayindex, itemindex, val) => {
     itemindex,
   };
   if (props.isCustomEdit == true) {
-    emit("edit-card", geteditData.value);
+    emit("edit-card", {
+      data: geteditData.value,
+      oldData: response.value[arrayindex].data[itemindex],
+      response: response.value,
+    });
     return;
   }
-  document.body.classList.add('tvd__modal-open');
+  document.body.classList.add("tvd__modal-open");
   isModalOpened.value = true;
 };
 const openDeleteModal = (arrayindex, itemindex) => {
@@ -212,15 +230,27 @@ const openDeleteModal = (arrayindex, itemindex) => {
     itemindex,
     arrayindex,
   };
-  document.body.classList.add('tvd__modal-open');
+  if (props.isCustomEdit === true) {
+    const deletecontent =
+      response.value[deleteCardData.value.arrayindex].data[
+        deleteCardData.value.itemindex
+      ];
+    emit("delete-card", {
+      data: deletecontent,
+      event: deleteCardData.value,
+      response: response.value,
+    });
+    return;
+  }
+  document.body.classList.add("tvd__modal-open");
   isOpenDeleteModal.value = true;
 };
 const closeModal = () => {
-  document.body.classList.remove('tvd__modal-open');
+  document.body.classList.remove("tvd__modal-open");
   isModalOpened.value = false;
 };
 const closeDeleteModal = () => {
-  document.body.classList.remove('tvd__modal-open');
+  document.body.classList.remove("tvd__modal-open");
   isOpenDeleteModal.value = false;
 };
 const showAddCardUI = (index) => {
@@ -237,19 +267,18 @@ const closeNewList = () => {
 };
 const addCard = (index) => {
   if (newCard.value.title.trim() !== "") {
-    if (!response.value[index]) {
+    if (!response.value[index] || !response.value[index].data) {
       response.value[index] = { data: [] };
     }
     response.value[index].data.push({
       title: `${newCard.value.title}`,
       description: `<p>${newCard.value.description}</p>`,
+      deadlineDate: new Date().toISOString(),
+      attachment: [],
     });
     emit("add-card", {
       index: index,
-      value:
-        response.value[index].data[
-          response.value[index].data.length - 1
-        ],
+      value: response.value[index].data[response.value[index].data.length - 1],
       updatedValue: response.value,
     });
     newCard.value.title = "";
@@ -271,13 +300,38 @@ const addList = () => {
   }
 };
 const editdata = (event) => {
-  emit("edit-card", event);
-  document.body.classList.remove('tvd__modal-open');
+  const arrayIndex = event.arrayindex;
+  const itemIndex = event.itemindex;
+  const datatoUpdate = response.value[arrayIndex].data[itemIndex];
+  response.value[arrayIndex].data[itemIndex].title = event.title;
+  response.value[arrayIndex].data[itemIndex].description = event.description;
+  response.value[arrayIndex].data[itemIndex].deadlineDate = event.deadlineDate;
+  response.value[arrayIndex].data[itemIndex].attachment = event.attachment;
+
+  emit("edit-card", {
+    data: event,
+    newData: response.value[arrayIndex].data[itemIndex],
+    oldData: datatoUpdate,
+    response: response.value,
+  });
+  document.body.classList.remove("tvd__modal-open");
   isModalOpened.value = false;
 };
 const deleteCard = () => {
-  document.body.classList.remove('tvd__modal-open');
-  emit("delete-card", deleteCardData.value);
+  document.body.classList.remove("tvd__modal-open");
+  const deletecontent =
+    response.value[deleteCardData.value.arrayindex].data[
+      deleteCardData.value.itemindex
+    ];
+  response.value[deleteCardData.value.arrayindex].data.splice(
+    deleteCardData.value.itemindex,
+    1
+  );
+  emit("delete-card", {
+    data: deletecontent,
+    event: deleteCardData.value,
+    response: response.value,
+  });
   isOpenDeleteModal.value = false;
 };
 

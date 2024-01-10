@@ -427,3 +427,6 @@ hr {
 .tvd__cursor-pointer{
   cursor: pointer;
 }
+.tvd__add-textarea ,.tvd__form-control{
+  resize: none;
+}

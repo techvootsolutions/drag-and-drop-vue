@@ -215,8 +215,8 @@ const UpdateData = () => {
   const editData = {
     title: title.value,
     description: description.value,
-    deadlineDate: duedate.value,
-    attachment: attachment.value,
+    deadlineDate: duedate.value? duedate.value : new Date().toISOString(),
+    attachment: attachment.value ? attachment.value : [],
     arrayindex: getData.value.arrayindex,
     itemindex: getData.value.itemindex,
   };
