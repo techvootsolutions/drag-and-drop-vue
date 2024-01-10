@@ -163,9 +163,11 @@ const props = defineProps({
   },
   addCardTitle: {
     type: Text,
+    default: "Add Card"
   },
   addSectionTitle: {
     type: Text,
+    default: "Add Section"
   },
   isOpenDeleteModal: {
     type: Boolean,
@@ -176,7 +178,7 @@ const props = defineProps({
     default: false,
   },
 });
-const emit = defineEmits(["add-card", "edit-card", "delete-card"]);
+const emit = defineEmits(["add-card", "edit-card", "delete-card", "dragstart", "dropItem"]);
 
 const response = ref(props.responseData);
 const isOpenDeleteModal = ref(props.isOpenDeleteModal);
@@ -220,7 +222,6 @@ const closeModal = () => {
 const closeDeleteModal = () => {
   document.body.classList.remove('tvd__modal-open');
   isOpenDeleteModal.value = false;
-  
 };
 const showAddCardUI = (index) => {
   addingCard.value = index;
@@ -283,6 +284,7 @@ const deleteCard = () => {
 const dragStart = (arrayIndex, itemIndex) => {
   draggedItem.value = itemIndex;
   draggedArray.value = arrayIndex;
+  emit("dragstart", response.value[arrayIndex].data[itemIndex]);
 };
 const allowDrop = (event) => {
   event.preventDefault();
@@ -329,11 +331,8 @@ const dropItem = (targetArrayIndex, event) => {
       }
     }
   }
+  emit("dropItem", response.value);
   draggedItem.value = null;
   draggedArray.value = null;
 };
 </script>
-
-
-<style>
-</style>

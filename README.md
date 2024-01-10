@@ -57,6 +57,8 @@ Vue
       @add-card="addNewCardEvent"
       @edit-card="editCardEvent"
       @delete-card="deleteCardEvent"
+      @dragstart="dragEvent"
+      @dropItem="dropEvent"
     />
   </div>
 </template>
@@ -74,7 +76,6 @@ export default {
       response: [
         {
           title: "Section 1",
-          drop_col_id: "",
           data: [
             {
               title: "Card 1",
@@ -124,6 +125,12 @@ export default {
     deleteCardEvent(event) {
       // delete card event
     },
+    dragEvent(event) {
+      // drag start event
+    },
+    dropEvent(event) {
+      // drop event
+    }
   }
 }
 
@@ -140,7 +147,7 @@ export default {
 | addSectionTitle               | Text            |             | Section Title property                   |
 | addCardTitle                  | Text            |             | Card Title property                      |
 | isCustomEdit                  | Boolean         | False       | Custom Edit Functionality, if need to do |
-|                               |                 |             | custom edit and delete event outside.    |
+                                                                  custom edit and delete event outside.    
 
 
 ## Events
@@ -154,7 +161,7 @@ Event to be emitted by component on add card.
 <DragAndDropVue @add-card="addCard" />
 ```
 ```ts
-addCard() {
+addCard(event) {
   // add card event
 }
 ```
@@ -166,7 +173,7 @@ Event to be emitted by component on edit card.
 <DragAndDropVue @edit-card="editCard" />
 ```
 ```ts
-editCard() {
+editCard(event) {
   // edit card event
 }
 ```
@@ -178,11 +185,33 @@ Event to be emitted by component on delete card.
 <DragAndDropVue @delete-card="deleteCard" />
 ```
 ```ts
-deleteCard() {
+deleteCard(event) {
   // delete card event
 }
 ```
 
+### `@dragstart`
+Event to be emitted by component on drag start.
+
+```jsx
+<DragAndDropVue @dragstart="dragStart" />
+```
+```ts
+dragStart(event) {
+  // drag start event
+}
+```
+### `@dropItem`
+Event to be emitted by component on drop card.
+
+```jsx
+<DragAndDropVue @dropItem="dropCard" />
+```
+```ts
+dropCard(event) {
+  // drop event
+}
+```
 
 ## Slots
 

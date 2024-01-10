@@ -3,8 +3,9 @@
     <DragAndDropVue
       :isCustomEdit="false"
       :responseData="response"
-      addCardTitle="+Add Card"
       addSectionTitle="Add Section"
+      @dragstart="dragEvent"
+      @dropItem="dropEvent"
       @add-card="addNewCard"
       @edit-card="editData"
       @delete-card="deleteCard"
@@ -79,5 +80,11 @@ const deleteCard = (event) => {
   const itemIndex = event.itemindex;
   response.value[arrayIndex].data.splice(itemIndex, 1);
 };
+const dragEvent = (event) => {
+  console.log('event', event);
+}
+const dropEvent = (event) => {
+  console.log('drop event', event);
+}
 </script>
 

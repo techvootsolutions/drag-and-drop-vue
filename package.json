@@ -1,7 +1,7 @@
 {
   "name": "@techvootsolutions/drag-and-drop-vue",
   "description": "Plugin for Drag and Drop",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": false,
   "main": "dist/dragandropvue.common.js",
   "scripts": {
@@ -61,5 +61,11 @@
   "bugs": {
     "url": "https://github.com/techvootsolutions/drag-and-drop-vue/issues"
   },
-  "homepage": "https://github.com/techvootsolutions/drag-and-drop-vue#readme"
+  "homepage": "https://github.com/techvootsolutions/drag-and-drop-vue#readme",
+  "keywords": [
+    "vue",
+    "drag",
+    "drag-and-drop",
+    "draggable"
+  ]
 }
