@@ -27,7 +27,7 @@
           <template v-for="(item, itemindex) in data.data" :key="itemindex">
             <li
               class="tvd__card__item"
-              v-if="Object.keys(item).length > 0"
+              v-if="Object.keys(item).length > 0 && !$slots.customCard"
               :draggable="true"
               @dragstart="dragStart(index, itemindex)"
               @dragover.prevent="internalAllowDrop"
@@ -41,7 +41,7 @@
                   class="tvd__card__tag"
                   @click="openModal(item, index, itemindex, false)"
                 ></span>
-                <div>
+                <div class="tvd__card-button-wrapper">
                   <button
                     @click="openModal(item, index, itemindex, true)"
                     class="tvd__edit_card"
@@ -78,6 +78,16 @@
                   </div>
                 </li>
               </div>
+            </li>
+            <li
+              class="tvd__card__item"
+              v-if="$slots.customCard"
+              :draggable="true"
+              @dragstart="dragStart(index, itemindex)"
+              @dragover.prevent="internalAllowDrop"
+              @drop.prevent="internalDrop(index, itemindex)"
+            >
+            <slot :item="item" name="customCard"></slot>
             </li>
           </template>
           <li class="tvd__card__item" v-if="addingCard == index">
@@ -192,6 +202,7 @@ const emit = defineEmits([
   "delete-card",
   "dragstart",
   "dropItem",
+  "column-added",
 ]);
 
 const response = ref(props.responseData);
@@ -295,6 +306,7 @@ const addList = () => {
       title: `${newList.value.listTitle}`,
       data: [],
     });
+    emit("column-added", {response: response.value});
     newList.value.listTitle = "";
     addinglist.value = null;
   }

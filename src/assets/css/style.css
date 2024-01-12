@@ -393,12 +393,15 @@ hr {
   font-weight: 400;
   font-size: 14px;
 }
+
 .tvd__show_card span b {
   margin-right: 5px;
 }
+
 .tvd__modal-open .tvd__column__list {
   overflow: hidden;
 }
+
 .tvd__modal-open {
   overflow: hidden;
   height: 100vh;
@@ -424,9 +427,15 @@ hr {
   padding: 8px 10px;
   cursor: pointer;
 }
+
 .tvd__cursor-pointer{
   cursor: pointer;
 }
+
 .tvd__add-textarea ,.tvd__form-control{
   resize: none;
+}
+
+.tvd__card-button-wrapper {
+  margin-left: auto;
 }
