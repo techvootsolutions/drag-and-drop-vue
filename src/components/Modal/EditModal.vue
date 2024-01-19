@@ -27,7 +27,10 @@
               <span><b>DeadLine: </b></span>
               <span>{{ getData.event.deadlineDate }}</span>
             </div>
-            <div class="tvd__show_card" v-if="getData.event && getData.event.description">
+            <div
+              class="tvd__show_card"
+              v-if="getData.event && getData.event.description"
+            >
               <span v-html="getData.event.description"></span>
             </div>
             <div
@@ -43,32 +46,33 @@
                 v-for="(attachmentItem, index) in getData.event.attachment"
                 :key="index"
               >
-                <div v-if="attachmentItem.type.includes('image/')">
-                  <a :href="attachmentItem.dataUrl" target="_blank">
-                    <img
-                      :src="attachmentItem.dataUrl"
-                      :alt="`Image Attachment ${index + 1}`"
-                      style="max-width: 100%"
-                      class="tvd__img_attachment"
-                    />
-                  </a>
-                </div>
-                <div v-else-if="attachmentItem.type.includes('video/')">
-                  <video
-                    controls
-                    :src="attachmentItem.dataUrl"
+                <div v-if="attachmentItem.type.includes('image')">
+                <a :href="attachmentItem.url" target="_blank">
+                  <img
+                    :src="attachmentItem.url"
+                    :alt="`Image Attachment ${index + 1}`"
                     style="max-width: 100%"
                     class="tvd__img_attachment"
-                  ></video>
+                  />
+                </a>
                 </div>
-                <div v-else-if="attachmentItem.type === 'application/pdf'">
-                  <!-- You can use a PDF viewer library here -->
-                  <p>PDF Attachment</p>
-                  <div v-html="attachmentItem.htmlElement"></div>
+                <div v-else-if="attachmentItem.type.includes('video')">
+                  <a href="#" @click="openVideoInNewTab(attachmentItem.url)">
+                <video
+                  controls
+                  :src="attachmentItem.url"
+                  style="max-width: 100%"
+                  class="tvd__img_attachment"
+                ></video></a>
                 </div>
-                <div v-else>
-                  <!-- Handle other file types as needed -->
-                  <p>{{ attachmentItem.type }}: Not supported for preview</p>
+                <div v-else-if="attachmentItem.type.includes('pdf')">
+                <!-- You can use a PDF viewer library here -->
+                <p>PDF Attachment</p>
+                <div v-html="attachmentItem.htmlElement"></div>
+                <!-- </div> -->
+                <!-- <div v-else> -->
+                <!-- Handle other file types as needed -->
+                <p>{{ attachmentItem.type }}: Not supported for preview</p>
                 </div>
               </div>
             </div>
@@ -146,7 +150,6 @@ const emit = defineEmits(["modal-close"], ["edit-data"]);
 
 const target = ref(null);
 
-
 const handleFileChange = (event) => {
   const selectedFiles = event.target.files;
 
@@ -158,24 +161,19 @@ const handleFileChange = (event) => {
       const reader = new FileReader();
 
       if (isFileTypeSupported(type)) {
+        console.log('in if in type');
         reader.onload = () => {
           newAttachments.push({
             type,
             file,
-            dataUrl: reader.result,
+            url: reader.result,
           });
 
           if (newAttachments.length === selectedFiles.length) {
             attachment.value = newAttachments;
           }
+          console.log('attachment', attachment.value);
         };
-
-        if (type === "image/heif" || type === "image/heic") {
-          console.log("Image Type is not supported");
-          alert("This file format is not supported");
-        } else {
-          reader.readAsDataURL(file);
-        }
       } else {
         console.warn(`Unsupported file type: ${type}`);
       }
@@ -185,8 +183,12 @@ const handleFileChange = (event) => {
   }
 };
 
+const openVideoInNewTab = (linkUrl) => {
+  window.open(linkUrl, '_blank');
+}
+
 const isFileTypeSupported = (type) => {
-  const supportedTypes = ["image/", "video/", "application/pdf"];
+  const supportedTypes = ["image", "video", "pdf"];
   return supportedTypes.some((supportedType) => type.startsWith(supportedType));
 };
 onClickOutside(target, () => {
@@ -215,20 +217,23 @@ const UpdateData = () => {
   const editData = {
     title: title.value,
     description: description.value,
-    deadlineDate: duedate.value? duedate.value : new Date().toISOString(),
-    attachment: attachment.value ? attachment.value : [],
+    deadlineDate: duedate.value ? duedate.value : new Date().toISOString(),
+    attachment: attachment.value ? getData.value.event.attachment.concat(attachment.value) : [],
     arrayindex: getData.value.arrayindex,
     itemindex: getData.value.itemindex,
   };
+  console.log('editData after concate', editData);
   emit("edit-data", editData);
 };
 watch(getData, async (val) => {
   if (val) {
+    console.log("val", val);
     title.value = val.event.title;
     description.value = val.event.description;
     duedate.value = val.event.deadlineDate;
     attachment.value = val.event.attachment;
   }
+  console.log('val', val);
 });
 </script>
 

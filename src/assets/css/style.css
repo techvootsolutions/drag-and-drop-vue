@@ -4,7 +4,12 @@
 section {
   padding: 3rem;
 } */
-
+.card-dragged {
+  transition: all 0.3s ease-in-out;
+}
+.tvd__section-title {
+  display: inline-flex;
+}
 .tvd__column__list {
   display: flex;
   flex-direction: row;

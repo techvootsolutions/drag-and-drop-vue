@@ -8,8 +8,32 @@
       >
         <!-- section title -->
         <div class="tvd__column__title--wrapper">
-          <h2 v-if="data.title">{{ data.title }}</h2>
-
+          <h2 v-if="editSectionTitle !== index && data.title">
+            {{ data.title }}
+          </h2>
+          <div v-if="editSectionTitle === index" class="tvd__section-title">
+            <input
+              v-model="data.title"
+              type="text"
+              placeholder="Section Title"
+              class="tvd__add-input"
+              />
+              <button class="tvd__edit_card" @click="saveEdit(index, data)">
+                <i class="tvd__icons fa-solid fa-check"></i>
+              </button>
+              <button class="tvd__edit_card" @click="closeEditSection()">
+                <i class="tvd__icons fa-solid fa-xmark"></i>
+              </button>
+          </div>
+          <div v-if="editSectionTitle === index">
+          </div>
+          <button
+            v-else
+            class="tvd__edit_card"
+            @click="showEditCardUI(index, data)"
+          >
+            <i class="fa-solid fa-pen-to-square tvd__icons"></i>
+          </button>
           <div>
             <i
               class="tvd__column__item--cta fa-solid fa-plus tvd__cursor-pointer"
@@ -26,7 +50,7 @@
         >
           <template v-for="(item, itemindex) in data.data" :key="itemindex">
             <li
-              class="tvd__card__item"
+              :class="['tvd__card__item', { 'card-dragged': isDragging && draggedIndex === index }]"
               v-if="Object.keys(item).length > 0 && !$slots.customCard"
               :draggable="true"
               @dragstart="dragStart(index, itemindex)"
@@ -87,7 +111,7 @@
               @dragover.prevent="internalAllowDrop"
               @drop.prevent="internalDrop(index, itemindex)"
             >
-            <slot :item="item" name="customCard"></slot>
+              <slot :item="item" name="customCard"></slot>
             </li>
           </template>
           <li class="tvd__card__item" v-if="addingCard == index">
@@ -167,10 +191,13 @@ import DeleteConfirmation from "./Modal/DeleteConfirmation.vue";
 import { ref, defineProps, defineEmits } from "vue";
 
 const isModalOpened = ref(false);
+const isDragging = ref(false);
+const draggedIndex = ref(null);
 const draggedItem = ref(null);
 const draggedArray = ref(null);
 const isEdit = ref(false);
 let addingCard = ref(null);
+let editSectionTitle = ref(null);
 let addinglist = ref(null);
 // const slots = useSlots();
 
@@ -180,11 +207,11 @@ const props = defineProps({
     required: true,
   },
   addCardTitle: {
-    type: Text,
+    type: String,
     default: "Add Card",
   },
   addSectionTitle: {
-    type: Text,
+    type: String,
     default: "Add Section",
   },
   isOpenDeleteModal: {
@@ -203,6 +230,7 @@ const emit = defineEmits([
   "dragstart",
   "dropItem",
   "column-added",
+  "edit-section-title",
 ]);
 
 const response = ref(props.responseData);
@@ -217,8 +245,6 @@ const newList = ref({
   listTitle: "",
 });
 const openModal = (event, arrayindex, itemindex, val) => {
-  // eslint-disable-next-line no-undef
-  // console.log("slot", slots.default()[0]);
   isEdit.value = val;
   geteditData.value = {
     event,
@@ -306,7 +332,7 @@ const addList = () => {
       title: `${newList.value.listTitle}`,
       data: [],
     });
-    emit("column-added", {response: response.value});
+    emit("column-added", { response: response.value });
     newList.value.listTitle = "";
     addinglist.value = null;
   }
@@ -350,6 +376,8 @@ const deleteCard = () => {
 const dragStart = (arrayIndex, itemIndex) => {
   draggedItem.value = itemIndex;
   draggedArray.value = arrayIndex;
+  isDragging.value = true;
+  draggedIndex.value = arrayIndex;
   emit("dragstart", response.value[arrayIndex].data[itemIndex]);
 };
 const allowDrop = (event) => {
@@ -359,6 +387,8 @@ const internalAllowDrop = (event) => {
   event.preventDefault();
 };
 const internalDrop = (targetArrayIndex, targetIndex) => {
+  isDragging.value = false;
+  draggedIndex.value = null;
   if (draggedItem.value === null || draggedArray.value === null) return;
   if (draggedArray.value === targetArrayIndex) {
     const targetArray = response.value[targetArrayIndex];
@@ -400,5 +430,22 @@ const dropItem = (targetArrayIndex, event) => {
   emit("dropItem", response.value);
   draggedItem.value = null;
   draggedArray.value = null;
+};
+
+const showEditCardUI = (index) => {
+  if (editSectionTitle.value === null) {
+    editSectionTitle.value = index;
+  }
+};
+const saveEdit = (index, data) => {
+  if (data.title.trim() !== "") {
+    editSectionTitle.value = null;
+    emit("edit-section-title", { index, newTitle: data.title });
+  } else {
+    alert("Section title cannot be empty!");
+  }
+};
+const closeEditSection = () => {
+  editSectionTitle.value = null;
 };
 </script>
