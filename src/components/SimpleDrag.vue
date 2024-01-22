@@ -208,8 +208,8 @@ const editdata = (event) => {
   response.value[arrayIndex].data[itemIndex].deadlineDate = event.deadlineDate;
   response.value[arrayIndex].data[itemIndex].attachment = event.attachment;
   emit("edit-card", { data: event, newData: response.value[arrayIndex].data[itemIndex], oldData: datatoUpdate, response: response.value });
-  document.body.classList.remove("tvd__modal-open");
-  isModalOpened.value = false;
+  // document.body.classList.remove("tvd__modal-open");
+  // isModalOpened.value = false;
 };
 const deleteCard = () => {
   document.body.classList.remove("tvd__modal-open");

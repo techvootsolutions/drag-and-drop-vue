@@ -8,31 +8,46 @@
         </div>
         <hr class="tvd__hr" />
         <div class="tvd__modal-body">
-          <div v-if="!isEdit">
-            <div class="tvd__show_card" v-if="getData.event && getData.event.title"><h6>{{ getData.event.title }}</h6></div>
-            <div class="tvd__show_card" v-if="getData.event && getData.event.deadlineDate"><span><b>DeadLine: </b></span><span>{{ getData.event.deadlineDate }}</span></div>
-            <div class="tvd__show_card" v-if="getData.event && getData.event.description"><span v-html="getData.event.description"></span></div>
-            <div class="tvd__image" v-if="getData.event && getData.event.attachment">
-              <div v-for="(attachmentItem, index) in getData.event.attachment" :key="index">
-                <div v-if="attachmentItem.type.includes('image')">
-                  <a :href="attachmentItem.url" target="_blank">
-                    <img :src="attachmentItem.url" :alt="`Image Attachment ${index + 1}`" style="max-width: 100%" class="tvd__img_attachment" />
-                  </a>
+          <!-- <div v-if="!isEdit"> -->
+          <div>
+            <div class="tvd__show_card" v-if="getData.event && getData.event.title">
+              <h6 v-if="!editTitle">{{ getData.event.title }}</h6> <i class="fa-solid fa-pen-to-square tvd__icons tvd__ms-2" v-if="!editTitle" @click="toggleEdit('title', true)"></i>
+              <div class="tvd__form-group" v-if="editTitle"><input class="tvd__form-control" type="text" @blur="toggleEdit('title',false)" @change="UpdateData('title')" v-model="title" /></div>
+            </div>
+            <div class="tvd__show_card" v-if="getData.event && getData.event.deadlineDate">
+              <span><b>DeadLine: </b></span>
+              <span v-if="!editDeadline">{{ getData.event.deadlineDate }}</span> <i class="fa-solid fa-pen-to-square tvd__icons tvd__ms-2" v-if="!editDeadline" @click="toggleEdit('deadline',true)"></i>
+              <div class="tvd__form-group" v-if="editDeadline"><input class="tvd__form-control" type="date"  @blur="toggleEdit('deadline',false)" @change="UpdateData('deadline')" v-model="duedate" /></div>
+            </div>
+            <div class="tvd__show_card tvd__show_card_desc" v-if="getData.event && getData.event.description">
+              <span class="tvd__show_card_desc_title"><b>Description: </b>  <i class="fa-solid fa-pen-to-square tvd__icons tvd__ms-2" v-if="!editDesc" @click="toggleEdit('desc',true)" ></i></span>
+              <div class="tvd__form-group" v-if="editDesc"><label class="tvd__form-label">Description</label><textarea class="tvd__form-control" rows="4"  @blur="toggleEdit('desc',false)" @change="UpdateData('desc')" v-model="description"></textarea></div>
+              <span class="tvd__show_card_desc_html" v-if="!editDesc" v-html="getData.event.description"></span>
+            </div>
+            <div class="tvd__image" >
+              <template v-if="getData.event && getData.event.attachment">
+                <div v-for="(attachmentItem, index) in getData.event.attachment" :key="index">
+                  <div v-if="attachmentItem.type.includes('image')">
+                    <a :href="attachmentItem.url" target="_blank">
+                      <img :src="attachmentItem.url" :alt="`Image Attachment ${index + 1}`" style="max-width: 100%" class="tvd__img_attachment" />
+                    </a>
+                  </div>
+                  <div v-else-if="attachmentItem.type.includes('video')">
+                    <a href="#" @click="openVideoInNewTab(attachmentItem.url)">
+                      <video controls :src="attachmentItem.url" style="max-width: 100%" class="tvd__img_attachment"></video>
+                    </a>
+                  </div>
+                  <div v-else-if="attachmentItem.type.includes('pdf')">
+                    <p>PDF Attachment</p>
+                    <div v-html="attachmentItem.htmlElement"></div>
+                    <p>{{ attachmentItem.type }}: Not supported for preview</p>
+                  </div>
                 </div>
-                <div v-else-if="attachmentItem.type.includes('video')">
-                  <a href="#" @click="openVideoInNewTab(attachmentItem.url)">
-                    <video controls :src="attachmentItem.url" style="max-width: 100%" class="tvd__img_attachment"></video>
-                  </a>
-                </div>
-                <div v-else-if="attachmentItem.type.includes('pdf')">
-                  <p>PDF Attachment</p>
-                  <div v-html="attachmentItem.htmlElement"></div>
-                  <p>{{ attachmentItem.type }}: Not supported for preview</p>
-                </div>
-              </div>
+              </template>
+              <div class="tvd__form-group"><label class="tvd__img_attachment"> + <input class="tvd__form-control tvd__d-none" type="file" multiple @change="handleFileChange" /> </label></div>
             </div>
           </div>
-          <div v-if="isEdit">
+          <!-- <div v-if="isEdit">
             <form @submit.prevent="UpdateData()">
               <div class="tvd__form-group"><label class="tvd__form-label">Title</label><input class="tvd__form-control" type="text" v-model="title" /></div>
               <div class="tvd__form-group"><label class="tvd__form-label">Description</label><textarea class="tvd__form-control" rows="4" v-model="description"></textarea></div>
@@ -43,7 +58,7 @@
                 <button class="tvd__edit_btn" @click="$emit('modal-close')">Close</button>
               </div>
             </form>
-          </div>
+          </div> -->
           <!-- <slot name="content"> {{ getData.age }} </slot>
           <p name="header" v-html="getData.html"></p> -->
         </div>
@@ -56,35 +71,43 @@ import { watch, defineProps, defineEmits, ref, computed } from "vue";
 import { onClickOutside } from "@vueuse/core";
 const props = defineProps({isOpen:{type:Boolean,default:false},isEdit:{type:Boolean,default:false},data:{default:()=>({})},type:String});
 const title = ref("");const description = ref("");const duedate = ref(null);const attachment = ref([]);const emit = defineEmits(["modal-close"],["edit-data"]);const target = ref(null);
-const handleFileChange = (event) => {
+const handleFileChange = async (event) => {
   const selectedFiles = event.target.files;
   if (selectedFiles && selectedFiles.length > 0) {
-    const newAttachments = [];
+    let newAttachments = [];
     for (const file of selectedFiles) {
       const type = file.type;
       const reader = new FileReader();
       if (isFileTypeSupported(type)) {
-        reader.onload = () => {
-          newAttachments.push({
+        // --- Here is the issue
+         reader.onload = async () => {
+          await newAttachments.push({
             type,
             file,
             url: reader.result,
           });
-          if (newAttachments.length === selectedFiles.length) {
+           if (newAttachments.length === selectedFiles.length) {
             attachment.value = newAttachments;
+            UpdateData();
           }
         };
       } else {
         console.warn(`Unsupported file type: ${type}`);
       }
     }
+    // console.log('newAttachments ==>>>',newAttachments);
+    // if (newAttachments.length > 0) {
+    //   attachment.value = newAttachments;
+    //   UpdateData();
+    // }
   } else {
     console.error("Selected files are not an array or empty:", selectedFiles);
   }
 };
 const openVideoInNewTab = (linkUrl) => {window.open(linkUrl, "_blank");};
 const isFileTypeSupported = (type) => {
-  const supportedTypes = ["image", "video", "pdf"];
+  const supportedTypes = ["image/", "video/", "pdf/"];
+  console.log(supportedTypes.some((supportedType) => type.startsWith(supportedType)));
   return supportedTypes.some((supportedType) => type.startsWith(supportedType));
 };
 onClickOutside(target, () => {
@@ -106,12 +129,29 @@ const UpdateData = () => {
   };
   emit("edit-data", editData);
 };
+
+const editTitle = ref(false); 
+const editDeadline = ref(false); 
+const editDesc = ref(false);
+
+const toggleEdit = (key, val) => {
+if(key == 'title') {
+  editTitle.value = val;
+}
+else if(key == 'deadline') {
+  editDeadline.value = val;
+}
+else if(key == 'desc') {
+  editDesc.value = val;
+}
+};
+
 watch(getData, async (val) => {
   if (val) {
     title.value = val.event.title;
     description.value = val.event.description;
     duedate.value = val.event.deadlineDate;
-    attachment.value = val.event.attachment;
+    // attachment.value = val.event.attachment;
   }
 });
 </script>

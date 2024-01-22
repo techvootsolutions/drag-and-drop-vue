@@ -375,6 +375,7 @@ hr {
 }
 
 .tvd__image {
+  flex-wrap: wrap;
   display: flex;
   margin-top: 10px;
 }
@@ -443,4 +444,36 @@ hr {
 
 .tvd__card-button-wrapper {
   margin-left: auto;
+}
+.tvd__ms-2 {
+  margin-left: 8px;
+}
+.tvd__show_card_desc {
+  flex-direction: column;
+}
+.tvd__show_card_desc .tvd__show_card_desc_title  {
+  display: flex;
+  align-items: baseline;
+}
+.tvd__show_card i {
+  font-size: 13px;
+  height: 13px;
+  cursor: pointer;
+}
+.tvd__show_card_desc span p {
+  margin: 0;
+  margin-bottom: 4px;
+}
+.tvd__d-none {
+  display: none;
+}
+.tvd__show_card_desc span.tvd__show_card_desc_html {
+  margin: 0;
+  margin-top: 8px;
+}
+.tvd__form-group .tvd__img_attachment{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 13px 4px rgb(0 0 0 / 50%);
 }
