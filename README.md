@@ -59,6 +59,7 @@ Vue
       @delete-card="deleteCardEvent"
       @dragstart="dragEvent"
       @dropItem="dropEvent"
+      @column-added="columnAdded"
     />
   </div>
 </template>
@@ -78,15 +79,42 @@ export default {
           title: "Section 1",
           data: [
             {
+              // name:'dev'
               title: "Card 1",
               description: "<p>Description<p>",
-              attachment: null,
+              attachment: [
+                {
+                  type: "image",
+                  url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
+                },
+                {
+                  type: "image",
+                  url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
+                },
+                {
+                  type: "video",
+                  url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                },
+              ],
               deadlineDate: "Jan 11, 2024",
             },
             {
               title: "Card 2",
               description: "<p>Description<p>",
-              attachment: null,
+              attachment: [
+                {
+                  type: "video",
+                  url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                },
+                {
+                  type: "image",
+                  url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
+                },
+                {
+                  type: "pdf",
+                  url: "",
+                },
+              ],
               deadlineDate: "Jan 11, 2024",
             },
             {
@@ -112,7 +140,7 @@ export default {
           title: "Section 3",
           data: [],
         },
-      ]
+      ],
     }
   },
   methods: {
@@ -130,6 +158,9 @@ export default {
     },
     dropEvent(event) {
       // drop event
+    },
+    columnAdded(event) {
+      // add-section event
     }
   }
 }
@@ -212,6 +243,17 @@ dropCard(event) {
   // drop event
 }
 ```
+### `@column-added`
+Event to be emitted by component when columns added.
+
+```jsx
+<DragAndDropVue @column-added="columnAdded" />
+```
+```ts
+columnAdded(event) {
+  // section-add event
+}
+```
 
 ## Slots
 
@@ -230,9 +272,11 @@ when you use this slot then you are not able to get add-card event.
   @edit-card="editCardEvent"
   @delete-card="deleteCardEvent"
 >
-  <template v-slot:cardForm>
-    <input type="text" />
-  </template>
+  <template v-slot:customCard="{ item }">
+      <div>
+        {{ item }} // add your custom HTML
+      </div>
+    </template>
 </DragAndDropVue>
 ```
 

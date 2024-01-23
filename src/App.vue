@@ -69,7 +69,7 @@ const response = ref([
           },
           {
             type: 'pdf',
-            url: '',
+            url: 'https://www.learningcontainer.com/wp-content/uploads/2019/09/sample-pdf-file.pdf',
           }
         ],
         deadlineDate: "Jan 11, 2024",

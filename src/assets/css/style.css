@@ -477,3 +477,35 @@ hr {
   justify-content: center;
   box-shadow: inset 0 0 13px 4px rgb(0 0 0 / 50%);
 }
+.tvd__attachment {
+  position: relative;
+  display: inline-block;
+}
+.tvd__delete_attachment {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin: 8px;
+}
+.tvd__delete_file {
+  color: #b92f2f;
+}
+.tvd__pdf_attachment {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+.tvd__pdf_attachment-icon {
+  font-size: 60px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  display: flex;
+  color: #9797a5;
+}

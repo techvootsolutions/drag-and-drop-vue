@@ -1,7 +1,7 @@
 {
   "name": "@techvootsolutions/drag-and-drop-vue",
   "description": "Plugin for Drag and Drop",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": false,
   "main": "dist/dragandropvue.common.js",
   "scripts": {

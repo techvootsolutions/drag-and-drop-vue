@@ -4,7 +4,7 @@
       <div class="tvd__modal-container" ref="target">
         <div class="tvd__modal-header">
           <h6>{{ isEdit ? "Edit Card" : "Show Card" }}</h6>
-          <button class="tvd__close_editmodal tvd__modal-close" @click="$emit('modal-close')"><i class="tvd__icons fa-solid fa-xmark"></i></button>
+          <button class="tvd__close_editmodal tvd__modal-close" @click="$emit('modal-close');toggleEdit('all', false);"><i class="tvd__icons fa-solid fa-xmark"></i></button>
         </div>
         <hr class="tvd__hr" />
         <div class="tvd__modal-body">
@@ -21,46 +21,46 @@
             </div>
             <div class="tvd__show_card tvd__show_card_desc" v-if="getData.event && getData.event.description">
               <span class="tvd__show_card_desc_title"><b>Description: </b>  <i class="fa-solid fa-pen-to-square tvd__icons tvd__ms-2" v-if="!editDesc" @click="toggleEdit('desc',true)" ></i></span>
-              <div class="tvd__form-group" v-if="editDesc"><label class="tvd__form-label">Description</label><textarea class="tvd__form-control" rows="4"  @blur="toggleEdit('desc',false)" @change="UpdateData('desc')" v-model="description"></textarea></div>
-              <span class="tvd__show_card_desc_html" v-if="!editDesc" v-html="getData.event.description"></span>
+              <div class="tvd__form-group" v-if="editDesc"><label class="tvd__form-label">Description</label><textarea class="tvd__form-control" rows="4" cols="41" width="100%" wrap="soft" @blur="toggleEdit('desc',false)" @change="UpdateData('desc')" v-model="description"></textarea></div>
+              <span class="tvd__show_card_desc_html" v-if="!editDesc" style="white-space: pre-wrap;" v-html="getData.event.description"></span>
             </div>
             <div class="tvd__image" >
               <template v-if="getData.event && getData.event.attachment">
                 <div v-for="(attachmentItem, index) in getData.event.attachment" :key="index">
-                  <div v-if="attachmentItem.type.includes('image')">
+                  <div class="tvd__attachment" v-if="attachmentItem.type.includes('image')">
                     <a :href="attachmentItem.url" target="_blank">
                       <img :src="attachmentItem.url" :alt="`Image Attachment ${index + 1}`" style="max-width: 100%" class="tvd__img_attachment" />
                     </a>
+                    <button @click="openDeleteModal(index)" class="tvd__delete_attachment">
+                      <i class="tvd__icons tvd__delete_file fa-solid fa-xmark"></i>
+                    </button>
                   </div>
-                  <div v-else-if="attachmentItem.type.includes('video')">
+                  <div class="tvd__attachment" v-else-if="attachmentItem.type.includes('video')">
                     <a href="#" @click="openVideoInNewTab(attachmentItem.url)">
                       <video controls :src="attachmentItem.url" style="max-width: 100%" class="tvd__img_attachment"></video>
                     </a>
+                    <button @click="openDeleteModal(index)" class="tvd__delete_attachment">
+                      <i class="tvd__icons tvd__delete_file fa-solid fa-xmark"></i>
+                    </button>
                   </div>
-                  <div v-else-if="attachmentItem.type.includes('pdf')">
-                    <p>PDF Attachment</p>
-                    <div v-html="attachmentItem.htmlElement"></div>
-                    <p>{{ attachmentItem.type }}: Not supported for preview</p>
+                  <div class="tvd__attachment" v-else-if="attachmentItem.type.includes('pdf')">
+                    <!-- <p>PDF Attachment</p> -->
+                    <!-- <div class="tvd__pdf_attachment"> -->
+                      <a :href="attachmentItem.url">
+                        <i class="tvd__img_attachment tvd__pdf_attachment-icon fa-solid fa-file-pdf"></i>
+                        <!-- {{ getFileNameFromUrl(attachmentItem.url) }} -->
+                      </a>
+                      <button @click="openDeleteModal(index)" class="tvd__delete_attachment">
+                      <i class="tvd__icons tvd__delete_file fa-solid fa-xmark"></i>
+                    </button>
+                    <!-- </div> -->
+                    <!-- <p>{{ attachmentItem.type }}: Not supported for preview</p> -->
                   </div>
                 </div>
               </template>
-              <div class="tvd__form-group"><label class="tvd__img_attachment"> + <input class="tvd__form-control tvd__d-none" type="file" multiple @change="handleFileChange" /> </label></div>
+              <div class="tvd__form-group"><label class="tvd__icons tvd__img_attachment"><i class="fa-solid fa-folder-plus"></i><input class="tvd__form-control tvd__d-none" type="file" multiple @change="handleFileChange" /> </label></div>
             </div>
           </div>
-          <!-- <div v-if="isEdit">
-            <form @submit.prevent="UpdateData()">
-              <div class="tvd__form-group"><label class="tvd__form-label">Title</label><input class="tvd__form-control" type="text" v-model="title" /></div>
-              <div class="tvd__form-group"><label class="tvd__form-label">Description</label><textarea class="tvd__form-control" rows="4" v-model="description"></textarea></div>
-              <div class="tvd__form-group"><label class="tvd__form-label">Due Date</label><input class="tvd__form-control" type="date" v-model="duedate" /></div>
-              <div class="tvd__form-group"><label class="tvd__form-label">Attachment</label><input class="tvd__form-control" type="file" multiple @change="handleFileChange" /></div>
-              <div class="tvd__modal-footer">
-                <button type="file" class="tvd__edit_btn">Submit</button>
-                <button class="tvd__edit_btn" @click="$emit('modal-close')">Close</button>
-              </div>
-            </form>
-          </div> -->
-          <!-- <slot name="content"> {{ getData.age }} </slot>
-          <p name="header" v-html="getData.html"></p> -->
         </div>
       </div>
     </div>
@@ -71,51 +71,60 @@ import { watch, defineProps, defineEmits, ref, computed } from "vue";
 import { onClickOutside } from "@vueuse/core";
 const props = defineProps({isOpen:{type:Boolean,default:false},isEdit:{type:Boolean,default:false},data:{default:()=>({})},type:String});
 const title = ref("");const description = ref("");const duedate = ref(null);const attachment = ref([]);const emit = defineEmits(["modal-close"],["edit-data"]);const target = ref(null);
-const handleFileChange = async (event) => {
+const handleFileChange = async(event) => {
   const selectedFiles = event.target.files;
   if (selectedFiles && selectedFiles.length > 0) {
-    let newAttachments = [];
-    for (const file of selectedFiles) {
-      const type = file.type;
-      const reader = new FileReader();
-      if (isFileTypeSupported(type)) {
-        // --- Here is the issue
-         reader.onload = async () => {
-          await newAttachments.push({
-            type,
-            file,
-            url: reader.result,
+    const newAttachments = await Promise.all(
+      Array.from(selectedFiles).map(async (file) => {
+        const type = file.type;
+        if (isFileTypeSupported(type)) {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              resolve({
+                type,
+                file,
+                url: reader.result,
+              });
+            };
+            reader.readAsDataURL(file);
           });
-           if (newAttachments.length === selectedFiles.length) {
-            attachment.value = newAttachments;
-            UpdateData();
-          }
-        };
-      } else {
-        console.warn(`Unsupported file type: ${type}`);
-      }
+        } else {
+          console.warn(`Unsupported file type: ${type}`);
+          return null;
+        }
+      })
+    );
+    const filteredAttachments = newAttachments.filter((attachment) => attachment !== null);
+    if (filteredAttachments.length > 0) {
+      attachment.value = filteredAttachments;
+      UpdateData();
     }
-    // console.log('newAttachments ==>>>',newAttachments);
-    // if (newAttachments.length > 0) {
-    //   attachment.value = newAttachments;
-    //   UpdateData();
-    // }
   } else {
     console.error("Selected files are not an array or empty:", selectedFiles);
   }
 };
+const openDeleteModal = (index) => {
+  getData.value.event.attachment.splice(index, 1);
+  UpdateData();
+}
 const openVideoInNewTab = (linkUrl) => {window.open(linkUrl, "_blank");};
 const isFileTypeSupported = (type) => {
-  const supportedTypes = ["image/", "video/", "pdf/"];
-  console.log(supportedTypes.some((supportedType) => type.startsWith(supportedType)));
+  const supportedTypes = ["image/", "video/", "application/pdf"];
   return supportedTypes.some((supportedType) => type.startsWith(supportedType));
 };
+// const getFileNameFromUrl = (url) => {
+//   const parts = url.split('/');
+//   return parts[parts.length - 1];
+// }
 onClickOutside(target, () => {
   if (props.isOpen) {
     emit("modal-close");
+    toggleEdit('all', false);
   }
 });
 const getData = computed(() => {return props.data;});
+
 const UpdateData = () => {
   const editData = {
     title: title.value,
@@ -128,6 +137,7 @@ const UpdateData = () => {
     itemindex: getData.value.itemindex,
   };
   emit("edit-data", editData);
+  attachment.value = [];
 };
 
 const editTitle = ref(false); 
@@ -143,6 +153,11 @@ else if(key == 'deadline') {
 }
 else if(key == 'desc') {
   editDesc.value = val;
+} 
+else if(key == 'all') {
+  editDeadline.value = val;
+  editDesc.value = val;
+  editTitle.value = val;
 }
 };
 
