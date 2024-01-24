@@ -172,13 +172,12 @@ export default {
 ## Available props
 
 
-| Prop                          | Type            | Default     | Description                              |
-|-------------------------------|-----------------|-------------|------------------------------------------|
-| responseData                  | Array           |             | Array or Object value of card data       |
-| addSectionTitle               | Text            |             | Section Title property                   |
-| addCardTitle                  | Text            |             | Card Title property                      |
-| isCustomEdit                  | Boolean         | False       | Custom Edit Functionality, if need to do |
-                                                                  custom edit and delete event outside.    
+| Prop | Type  | Default | Description |
+| --- | --- | --- | --- |
+| `responseData` | `Array` | | `Array` or `Object` value of card data |
+| `addSectionTitle`  | `String` | `String` | Section Title property |
+| `addCardTitle` | `String` | `String` | Card Title property |
+| `isCustomEdit` | `Boolean` | `False` | Custom Edit Functionality, if need to do custom edit and delete event outside. |
 
 
 ## Events
