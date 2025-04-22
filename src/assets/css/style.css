@@ -4,7 +4,12 @@
 section {
   padding: 3rem;
 } */
-
+.card-dragged {
+  transition: all 0.3s ease-in-out;
+}
+.tvd__section-title {
+  display: inline-flex;
+}
 .tvd__column__list {
   display: flex;
   flex-direction: row;
@@ -82,12 +87,18 @@ section {
   line-clamp: 2;
   -webkit-box-orient: vertical;
 }
+.tvd__description p {
+  margin: 0;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 21px;
+}
 
 .tvd__card__field {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 0.75rem;
+  margin-bottom: 10px;
 }
 
 .tvd__card__field span {
@@ -101,6 +112,7 @@ section {
   border: 0;
   padding: 4px 5px;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .tvd__close_section {
@@ -119,17 +131,20 @@ section {
   display: inline-block;
   margin-left: 0.2rem;
   font-family: 'Poppins', sans-serif;
+  cursor: pointer;
 }
 
 .tvd__delete_card {
   padding: 0;
   border: 0;
   float: right;
+  cursor: pointer;
 }
 
 .tvd__edit_card {
   float: right;
   border: 0;
+  cursor: pointer;
 }
 
 .tvd__edit_card, .tvd__delete_card{
@@ -213,6 +228,7 @@ ul {
 
 .tvd__add-btn {
   border: none;
+  cursor: pointer;
   width: 100%;
   border-radius: 10px;
   box-shadow: 0 1px 0 rgba(9, 45, 66, 0.25);
@@ -359,27 +375,39 @@ hr {
 }
 
 .tvd__image {
+  flex-wrap: wrap;
   display: flex;
   margin-top: 10px;
 }
 
-.tvd__show_title {
+.tvd__show_card {
   display: flex;
   align-items: baseline;
 }
 
-.tvd__show_title h6 {
+.tvd__show_card h6 {
+  margin: 0;
+  margin-bottom: 10px;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
 }
 
-.tvd__show_title span {
+.tvd__show_card span {
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
+  font-size: 14px;
 }
+
+.tvd__show_card span b {
+  margin-right: 5px;
+}
+
 .tvd__modal-open .tvd__column__list {
   overflow: hidden;
 }
+
 .tvd__modal-open {
   overflow: hidden;
   height: 100vh;
@@ -403,7 +431,81 @@ hr {
   align-items: center;
   justify-content: center;
   padding: 8px 10px;
+  cursor: pointer;
 }
+
 .tvd__cursor-pointer{
   cursor: pointer;
+}
+
+.tvd__add-textarea ,.tvd__form-control{
+  resize: none;
+}
+
+.tvd__card-button-wrapper {
+  margin-left: auto;
+}
+.tvd__ms-2 {
+  margin-left: 8px;
+}
+.tvd__show_card_desc {
+  flex-direction: column;
+}
+.tvd__show_card_desc .tvd__show_card_desc_title  {
+  display: flex;
+  align-items: baseline;
+}
+.tvd__show_card i {
+  font-size: 13px;
+  height: 13px;
+  cursor: pointer;
+}
+.tvd__show_card_desc span p {
+  margin: 0;
+  margin-bottom: 4px;
+}
+.tvd__d-none {
+  display: none;
+}
+.tvd__show_card_desc span.tvd__show_card_desc_html {
+  margin: 0;
+  margin-top: 8px;
+}
+.tvd__form-group .tvd__img_attachment{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 13px 4px rgb(0 0 0 / 50%);
+}
+.tvd__attachment {
+  position: relative;
+  display: inline-block;
+}
+.tvd__delete_attachment {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin: 8px;
+}
+.tvd__delete_file {
+  color: #b92f2f;
+}
+.tvd__pdf_attachment {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+.tvd__pdf_attachment-icon {
+  font-size: 60px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  display: flex;
+  color: #9797a5;
 }

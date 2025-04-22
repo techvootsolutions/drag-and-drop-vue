@@ -25,27 +25,11 @@
     </div>
   </div>
 </template>
-  <script setup>
+<script setup>
 import { defineProps, defineEmits, ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
-
-const props = defineProps({
-  isOpenDeleteModal: {
-    type: Boolean,
-    default: false,
-  },
-  deleteMessage: {
-    type: String,
-  },
-});
+const props = defineProps({ isOpenDeleteModal: { type: Boolean, default: false }, deleteMessage: { type: String } });
 const emit = defineEmits(["modal-close"], ["confirm-delete"]);
-
 const target = ref(null);
-
-onClickOutside(target, () => {
-  if (props.isOpenDeleteModal) {
-    emit("modal-close");
-  }
-});
+onClickOutside(target, () => { if (props.isOpenDeleteModal) { emit("modal-close"); } });
 </script>
-  

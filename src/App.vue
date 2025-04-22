@@ -1,94 +1,128 @@
 <template>
   <div>
-    <SimpleDrag
+    <DragAndDropVue
       :isCustomEdit="false"
       :responseData="response"
-      :isModalOpened="modalOpened"
-      addCardTitle="+Add Card"
       addSectionTitle="Add Section"
+      @dragstart="dragEvent"
+      @dropItem="dropEvent"
       @add-card="addNewCard"
       @edit-card="editData"
       @delete-card="deleteCard"
+      @column-added="addCol"
     >
-      <!-- <template v-slot:cardForm>
-      <input type="shreya" />
+    <!-- <template v-slot:customCard="{ item }">
+      <div @click="slotclick(item)">
+        {{ item }}
+        <p>{{item.title}}</p>
+      </div>
     </template> -->
-    </SimpleDrag>
+      <!-- <template v-slot:cardForm>
+      <input type="text" />
+    </template> -->
+    </DragAndDropVue>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
-// import DragNDrop from 'drag-n-drop-vue';
-import SimpleDrag from "./components/SimpleDrag.vue";
+import DragAndDropVue from "./components/SimpleDrag.vue";
+// import dummyData from '../src/assets/data/data'
 
-const response = ref({
-  data: [
-    {
-      title: "Section 1",
-      drop_col_id: "",
-      data: [
-        { 
-          title: 'Card 1',
-          description: "<p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here'<p>",
-          attachment: null,
-          deadlineDate: new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }), 
-        },
-        { 
-          title: 'Card 2',
-          description: "<p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here'<p>",
-          attachment: null,
-          deadlineDate: new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+// const response = ref(dummyData);
+
+const response = ref([
+  {
+    title: "Section 1",
+    data: [
+      {
+        // name:'dev'
+        title: "Card 1",
+        description: "<p>Description<p>",
+        attachment: [
+          {
+            type: 'image',
+            url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
           },
-        { 
-          title: "Card 3",
-          description: "<p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here'<p>",
-          attachment: null,
-          deadlineDate: new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-        },
-      ],
-    },
-    {
-      title: "Section 2",
-      data: [
-        { 
-          title: 66, 
-          description: "<p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here'<p>",
-          attachment: null,
-          deadlineDate: new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+          {
+            type: 'image',
+            url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg',
+          },
+          {
+            type: 'video',
+            url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
           }
       ],
-    },
-    {
-      title: "Section 3",
-      data: [],
-    },
-  ],
-});
-const modalOpened = ref(false);
+        deadlineDate: "Jan 11, 2024",
+      },
+      {
+        title: "Card 2",
+        description: "<p>Description<p>",
+        attachment: [
+          {
+            type: 'video',
+            url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+          },
+          {
+            type: 'image',
+            url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg',
+          },
+          {
+            type: 'pdf',
+            url: 'https://www.learningcontainer.com/wp-content/uploads/2019/09/sample-pdf-file.pdf',
+          }
+        ],
+        deadlineDate: "Jan 11, 2024",
+      },
+      {
+        title: "Card 3",
+        description: "<p>Description<p>",
+        attachment: null,
+        deadlineDate: "Jan 11, 2024",
+      },
+    ],
+  },
+  {
+    title: "Section 2",
+    data: [
+      {
+        title: 66,
+        description: "<p>Description<p>",
+        attachment: null,
+        deadlineDate: "Jan 11, 2024",
+      },
+    ],
+  },
+  {
+    title: "Section 3",
+    data: [],
+  },
+]);
 const addNewCard = () => {};
+const addCol = () => {};
 const editData = (event) => {
-  const arrayIndex = event.arrayindex;
-  const itemIndex = event.itemindex;
-  response.value.data[arrayIndex].data[itemIndex].title = event.title;
-  response.value.data[arrayIndex].data[itemIndex].description = event.description;
-  response.value.data[arrayIndex].data[itemIndex].deadlineDate = event.deadlineDate;
-  response.value.data[arrayIndex].data[itemIndex].attachment = event.attachment;
+  console.log(event);
+  //   const arrayIndex = event.arrayindex;
+  //   const itemIndex = event.itemindex;
+  //   response.value[arrayIndex].data[itemIndex].title = event.title;
+  //   response.value[arrayIndex].data[itemIndex].description =
+  //     event.description;
+  //   response.value[arrayIndex].data[itemIndex].deadlineDate =
+  //     event.deadlineDate;
+  //   response.value[arrayIndex].data[itemIndex].attachment = event.attachment;
 };
 const deleteCard = (event) => {
-  const arrayIndex = event.arrayindex;
-  const itemIndex = event.itemindex;
-  response.value.data[arrayIndex].data.splice(itemIndex, 1);
+  console.log("delete ", event);
+  //   const arrayIndex = event.arrayindex;
+  //   const itemIndex = event.itemindex;
+  //   response.value[arrayIndex].data.splice(itemIndex, 1);
+};
+const dragEvent = (event) => {
+  console.log("event", event);
+};
+
+const dropEvent = (event) => {
+  console.log("drop event", event);
 };
 </script>
 
-<style>
-/* #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-} */
-</style>
