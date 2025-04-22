@@ -1,288 +1,358 @@
 <template>
-  <section v-if="response">
+  <section>
     <ul class="tvd__column__list">
-      <li class="tvd__column__item" v-for="(data, index) in response" :key="index">
-        <div class="tvd__column__title--wrapper">
-          <h2 v-if="editSectionTitle !== index && data.title">{{ data.title }}</h2>
-          <div v-if="editSectionTitle === index" class="tvd__section-title">
-            <input v-model="data.title" type="text" placeholder="Section Title" class="tvd__add-input"/>
-            <button class="tvd__edit_card" @click="saveEdit(index, data)">
-              <i class="tvd__icons fa-solid fa-check"></i>
-            </button>
-            <button class="tvd__edit_card" @click="closeEditSection()">
-              <i class="tvd__icons fa-solid fa-xmark"></i>
-            </button>
-          </div>
-          <div v-if="editSectionTitle === index"></div>
-          <button v-else class="tvd__edit_card" @click="showEditCardUI(index, data)">
-            <i class="fa-solid fa-pen-to-square tvd__icons"></i>
-          </button>
-          <div>
-            <i class="tvd__column__item--cta fa-solid fa-plus tvd__cursor-pointer" @click.prevent="showAddCardUI(index)"></i>
-          </div>
-        </div>
-        <ul class="tvd__card__list" v-if="data.data" @drop.prevent="dropItem(index, $event)" @dragover.prevent="allowDrop">
-          <template v-for="(item, itemindex) in data.data" :key="itemindex">
-            <li :class="['tvd__card__item', { 'card-dragged': isDragging && draggedIndex === index }]"
-                v-if="Object.keys(item).length > 0 && !$slots.customCard"
-                :draggable="true"
-                @dragstart="dragStart(index, itemindex)"
-                @dragover.prevent="internalAllowDrop"
-                @drop.prevent="internalDrop(index, itemindex)">
-              <div class="tvd__card__field">
-                <span v-if="item && item.title" v-html="item.title" class="tvd__card__tag" @click="openModal(item, index, itemindex, false)"></span>
-                <div class="tvd__card-button-wrapper">
-                  <button @click="openModal(item, index, itemindex, true)" class="tvd__edit_card">
-                    <i class="fa-solid fa-pen-to-square tvd__icons"></i>
-                  </button>
-                  <button @click="openDeleteModal(index, itemindex)" class="tvd__delete_card">
-                    <i class="tvd__icons fa-solid fa-trash-can"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="tvd__card__field" v-if="item && item.deadlineDate">
-                <span>{{ item.deadlineDate }}</span>
-              </div>
-              <div class="tvd__card__field" v-if="item && item.description">
-                <span class="tvd__description" v-html="item.description"></span>
-              </div>
-              <div class="tvd__card__actions">
-                <li class="tvd__card__actions--wrapper">
-                  <div class="tvd__card__avatars">
-                    <li class="tvd__card__avatars--item"></li>
-                  </div>
-                </li>
-              </div>
-            </li>
-            <li class="tvd__card__item" v-if="$slots.customCard" :draggable="true" @dragstart="dragStart(index, itemindex)"
-                @dragover.prevent="internalAllowDrop" @drop.prevent="internalDrop(index, itemindex)">
-              <slot :item="item" name="customCard"></slot>
-            </li>
-          </template>
-          <li class="tvd__card__item" v-if="addingCard == index">
-            <button class="tvd_close_addcard" @click="closeCard()">
-              <i class="tvd__icons fa-solid fa-xmark"></i>
-            </button>
-            <slot name="cardForm" />
-            <div v-if="!$slots.cardForm">
-              <input v-model="newCard.title" type="text" placeholder="Card Title" class="tvd__add-input"/>
-              <textarea v-model="newCard.description" placeholder="Card Description" class="tvd__add-textarea"></textarea>
-              <button class="tvd__add-btn" @click.prevent="addCard(index)">
-                <h6>{{ addCardTitle }}</h6>
-              </button>
-            </div>
-            <slot name="editForm" />
-          </li>
-        </ul>
-        <button class="tvd__add-btn" @click.prevent="showAddCardUI(index)">
-          <h6>{{ addCardTitle }}</h6>
-        </button>
-      </li>
-      <li class="tvd__column__item" v-if="addinglist">
-        <div class="tvd__card__item">
-          <button class="tvd__close_section" @click="closeNewList()">
-            <i class="tvd__icons fa-solid fa-xmark"></i>
-          </button>
-          <input v-model="newList.listTitle" type="text" placeholder="Section Title" class="tvd__add-input"/>
-          <button class="tvd__add-btn" @click.prevent="addList()">
-            <h6>{{ addSectionTitle }}</h6>
-          </button>
-        </div>
-      </li>
-      <li class="tvd__column__item">
-        <button class="tvd__add-btn" @click.prevent="showAddListUI()">
-          <h6>{{ addSectionTitle }}</h6>
-        </button>
-      </li>
+      <!-- Sections/Columns -->
+      <BoardSection
+        v-for="(data, index) in responseData.data"
+        :key="index"
+        :section="data"
+        :section-index="index"
+        :add-card-title="addCardTitle"
+        :is-adding-card="addingCard === index"
+        @show-add-card="showAddCardUI"
+        @close-card="closeCard"
+        @add-card="handleAddCard"
+        @open-edit-modal="openModal"
+        @open-delete-modal="openDeleteModal"
+        @drop="handleDropItem"
+        @drag-start="handleDragStart"
+        @drag-over="handleDragOver"
+        @drag-leave="handleDragLeave"
+        @internal-drop="handleInternalDrop"
+        @add-comment="handleAddComment"
+        @add-tag="handleAddTag"
+        @remove-tag="handleRemoveTag"
+        @add-attachment="handleAddAttachment"
+        @remove-attachment="handleRemoveAttachment"
+      />
+      
+      <!-- Adding new section UI -->
+      <AddListForm
+        :is-adding-list="addingList"
+        :add-section-title="addSectionTitle"
+        @close-new-list="closeNewList"
+        @add-list="handleAddList"
+      />
+      
+      <!-- Add new section button -->
+      <AddSectionButton
+        :add-section-title="addSectionTitle"
+        @show-add-list="showAddListUI"
+      />
     </ul>
-    <EditModal :isEdit="isEdit" :isOpen="isModalOpened" @modal-close="closeModal" @edit-data="editdata" name="first-modal" :data="geteditData" />
-    <DeleteConfirmation deleteMessage="Are you sure you want to Delete the Card?" :isOpenDeleteModal="isOpenDeleteModal" @modal-close="closeDeleteModal"
-                        @confirm-delete="deleteCard()" name="delete-confirmation-modal" />
-  </section>
-  <section v-else>
-    <slot name="noData" />
-    <p v-if="!$slots.noData">No Data</p>
+    
+    <!-- Modals -->
+    <EditModal
+      :is-edit="isEdit"
+      :is-open="isModalOpenedLocal"
+      @modal-close="closeModal"
+      @edit-data="editData"
+      name="first-modal"
+      :data="editCardData"
+    />
+    <DeleteConfirmation
+      delete-message="Are you sure you want to Delete the Card?"
+      :is-open-delete-modal="isOpenDeleteModalLocal"
+      @modal-close="closeDeleteModal"
+      @confirm-delete="deleteCard"
+      name="delete-confirmation-modal"
+    />
+    
+    <!-- Toast notification for drag and drop actions -->
+    <div v-if="showToast" class="tvd__toast" :class="{ 'show': showToast }">
+      {{ toastMessage }}
+    </div>
   </section>
 </template>
+
 <script setup>
+import { ref, defineProps, defineEmits } from "vue";
+import BoardSection from "./BoardSection.vue";
 import EditModal from "./Modal/EditModal.vue";
 import DeleteConfirmation from "./Modal/DeleteConfirmation.vue";
-import { ref, defineProps, defineEmits } from "vue";
-const isModalOpened = ref(false);
-const isDragging = ref(false);
-const draggedIndex = ref(null);
+import AddListForm from "./AddListForm.vue";
+import AddSectionButton from "./AddSectionButton.vue";
+
+const props = defineProps({
+  responseData: {
+    type: Object,
+    required: true
+  },
+  addCardTitle: {
+    type: String,
+    default: "+Add Card"
+  },
+  addSectionTitle: {
+    type: String,
+    default: "Add Section"
+  },
+  isModalOpened: {
+    type: Boolean,
+    default: false
+  },
+  isCustomEdit: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const emit = defineEmits(["add-card", "edit-card", "delete-card", "add-comment", "add-tag", "remove-tag", "add-attachment", "remove-attachment"]);
+
+// Reactive state
+const isModalOpenedLocal = ref(false);
+const isOpenDeleteModalLocal = ref(false);
+const isEdit = ref(false);
+const addingCard = ref(null);
+const addingList = ref(false);
+const editCardData = ref({});
+const deleteCardData = ref({});
+
+// Drag and drop state
 const draggedItem = ref(null);
 const draggedArray = ref(null);
-const isEdit = ref(false);
-let addingCard = ref(null);
-let editSectionTitle = ref(null);
-let addinglist = ref(null);
-const props = defineProps({
-  responseData: { type: Array, required: true },
-  addCardTitle: { type: String, default: "Add Card" },
-  addSectionTitle: { type: String, default: "Add Section" },
-  isOpenDeleteModal: { type: Boolean, default: false },
-  isCustomEdit: { type: Boolean, default: false },
-});
-const emit = defineEmits(["add-card", "edit-card", "delete-card", "dragstart", "dropItem", "column-added", "edit-section-title"]);
-const response = ref(props.responseData);
-const isOpenDeleteModal = ref(props.isOpenDeleteModal);
-const geteditData = ref({});
-const deleteCardData = ref({});
-const newCard = ref({ title: "", description: "" });
-const newList = ref({ listTitle: "" });
-const openModal = (event, arrayindex, itemindex, val) => {
-  isEdit.value = val;
-  geteditData.value = { event, arrayindex, itemindex };
-  if (props.isCustomEdit == true) {
-    emit("edit-card", { data: geteditData.value, oldData: response.value[arrayindex].data[itemindex], response: response.value });
-    return;
-  }
-  document.body.classList.add("tvd__modal-open");
-  isModalOpened.value = true;
-};
-const openDeleteModal = (arrayindex, itemindex) => {
-  deleteCardData.value = { itemindex, arrayindex };
-  if (props.isCustomEdit === true) {
-    const deletecontent = response.value[deleteCardData.value.arrayindex].data[deleteCardData.value.itemindex];
-    emit("delete-card", { data: deletecontent, event: deleteCardData.value, response: response.value });
-    return;
-  }
-  document.body.classList.add("tvd__modal-open");
-  isOpenDeleteModal.value = true;
-};
-const closeModal = () => {
-  document.body.classList.remove("tvd__modal-open");
-  isModalOpened.value = false;
-};
-const closeDeleteModal = () => {
-  document.body.classList.remove("tvd__modal-open");
-  isOpenDeleteModal.value = false;
-};
+
+// Toast notification
+const showToast = ref(false);
+const toastMessage = ref('');
+
+// Card management methods
 const showAddCardUI = (index) => {
   addingCard.value = index;
 };
-const showAddListUI = () => {
-  addinglist.value = true;
-};
+
 const closeCard = () => {
   addingCard.value = null;
 };
-const closeNewList = () => {
-  addinglist.value = null;
-};
-const addCard = (index) => {
-  if (newCard.value.title.trim() !== "") {
-    if (!response.value[index] || !response.value[index].data) {
-      response.value[index] = { data: [] };
-    }
-    response.value[index].data.push({
-      title: `${newCard.value.title}`,
-      description: `<p>${newCard.value.description}</p>`,
-      deadlineDate: new Date().toISOString(),
-      attachment: [],
-    });
-    emit("add-card", { index: index, value: response.value[index].data[response.value[index].data.length - 1], updatedValue: response.value });
-    newCard.value.title = "";
-    newCard.value.description = "";
-    addingCard.value = null;
-  }
-};
-const addList = () => {
-  if (newList.value.listTitle.trim() !== "") {
-    if (!response.value) {
-      response.value = { data: [] };
-    }
-    response.value.push({ title: `${newList.value.listTitle}`, data: [] });
-    emit("column-added", { response: response.value });
-    newList.value.listTitle = "";
-    addinglist.value = null;
-  }
-};
-const editdata = (event) => {
-  const arrayIndex = event.arrayindex;
-  const itemIndex = event.itemindex;
-  const datatoUpdate = response.value[arrayIndex].data[itemIndex];
-  response.value[arrayIndex].data[itemIndex].title = event.title;
-  response.value[arrayIndex].data[itemIndex].description = event.description;
-  response.value[arrayIndex].data[itemIndex].deadlineDate = event.deadlineDate;
-  response.value[arrayIndex].data[itemIndex].attachment = event.attachment;
-  emit("edit-card", { data: event, newData: response.value[arrayIndex].data[itemIndex], oldData: datatoUpdate, response: response.value });
-  // document.body.classList.remove("tvd__modal-open");
-  // isModalOpened.value = false;
-};
-const deleteCard = () => {
-  document.body.classList.remove("tvd__modal-open");
-  const deletecontent = response.value[deleteCardData.value.arrayindex].data[deleteCardData.value.itemindex];
-  response.value[deleteCardData.value.arrayindex].data.splice(deleteCardData.value.itemindex, 1);
-  emit("delete-card", { data: deletecontent, event: deleteCardData.value, response: response.value });
-  isOpenDeleteModal.value = false;
-};
-const dragStart = (arrayIndex, itemIndex) => {
-  draggedItem.value = itemIndex;
-  draggedArray.value = arrayIndex;
-  isDragging.value = true;
-  draggedIndex.value = arrayIndex;
-  emit("dragstart", response.value[arrayIndex].data[itemIndex]);
-};
-const allowDrop = (event) => {
-  event.preventDefault();
-};
-const internalAllowDrop = (event) => {
-  event.preventDefault();
-};
-const internalDrop = (targetArrayIndex, targetIndex) => {
-  isDragging.value = false;
-  draggedIndex.value = null;
-  if (draggedItem.value === null || draggedArray.value === null) return;
-  if (draggedArray.value === targetArrayIndex) {
-    const targetArray = response.value[targetArrayIndex];
-    const draggedItemObj = targetArray.data.splice(draggedItem.value, 1)[0];
-    targetArray.data.splice(targetIndex, 0, draggedItemObj);
-  }
+
+// Section management methods
+const showAddListUI = () => {
+  addingList.value = true;
 };
 
-const dropItem = (targetArrayIndex, event) => {
-  event.preventDefault();
-  if (draggedItem.value === null || draggedArray.value === null) return;
-  const targetArray = response.value[targetArrayIndex];
-  const targetList = event.target.parentElement;
-  if (targetList && targetList.children !== null) {
-    const targetIndex = Array.from(targetList && targetList.children).indexOf(event.target);
-    if (targetIndex === targetList && targetList.children.length - 1) {
-      const sourceArrayIndex = draggedArray.value;
-      if (sourceArrayIndex !== targetArrayIndex) {
-        const sourceArray = response.value[sourceArrayIndex];
-        targetArray.data.push(sourceArray.data[draggedItem.value]);
-        sourceArray.data.splice(draggedItem.value, 1);
-      }
-    } else {
-      const sourceArrayIndex = draggedArray.value;
-      if (sourceArrayIndex !== targetArrayIndex) {
-        const sourceArray = response.value[sourceArrayIndex];
-        targetArray.data.splice(targetIndex, 0, sourceArray.data[draggedItem.value]);
-        sourceArray.data.splice(draggedItem.value, 1);
-      }
-    }
+const closeNewList = () => {
+  addingList.value = false;
+};
+
+const handleAddList = (title) => {
+  // eslint-disable-next-line vue/no-mutating-props
+  props.responseData.data.push({
+    title: title,
+    data: [],
+  });
+  addingList.value = false;
+  
+  // Show toast notification
+  showToastNotification(`New section "${title}" added`);
+};
+
+// Modal management
+const openModal = (item, sectionIndex, itemIndex, isEditMode) => {
+  isEdit.value = isEditMode;
+  editCardData.value = {
+    event: item,
+    arrayindex: sectionIndex,
+    itemindex: itemIndex,
+  };
+  
+  if (props.isCustomEdit) {
+    emit("edit-card", editCardData.value);
+    return;
   }
-  emit("dropItem", response.value);
+  
+  document.body.classList.add('tvd__modal-open');
+  isModalOpenedLocal.value = true;
+};
+
+const handleAddAttachment = (event) => {
+  emit("add-attachment", event);
+  showToastNotification('Attachment added');
+};
+
+const handleRemoveAttachment = (event) => {
+  emit("remove-attachment", event);
+  showToastNotification('Attachment removed');
+};
+
+const closeModal = () => {
+  document.body.classList.remove('tvd__modal-open');
+  isModalOpenedLocal.value = false;
+};
+
+const openDeleteModal = (sectionIndex, itemIndex) => {
+  deleteCardData.value = {
+    arrayindex: sectionIndex,
+    itemindex: itemIndex,
+  };
+  
+  document.body.classList.add('tvd__modal-open');
+  isOpenDeleteModalLocal.value = true;
+};
+
+const closeDeleteModal = () => {
+  document.body.classList.remove('tvd__modal-open');
+  isOpenDeleteModalLocal.value = false;
+};
+
+const handleAddCard = (index, newCardData) => {
+  emit("add-card", {
+    index,
+    value: newCardData
+  });
+  
+  // Show toast notification
+  showToastNotification(`New card added to ${props.responseData.data[index]?.title}`);
+};
+
+const editData = (event) => {
+  emit("edit-card", event);
+  document.body.classList.remove('tvd__modal-open');
+  isModalOpenedLocal.value = false;
+  
+  // Show toast notification
+  showToastNotification('Card updated successfully');
+};
+
+const deleteCard = () => {
+  document.body.classList.remove('tvd__modal-open');
+  emit("delete-card", deleteCardData.value);
+  isOpenDeleteModalLocal.value = false;
+  
+  // Show toast notification
+  showToastNotification('Card deleted successfully');
+};
+
+// Comment and tag management
+const handleAddComment = (event) => {
+  emit("add-comment", event);
+  showToastNotification('Comment added');
+};
+
+const handleAddTag = (event) => {
+  emit("add-tag", event);
+  showToastNotification(`Tag "${event.tag}" added`);
+};
+
+const handleRemoveTag = (event) => {
+  emit("remove-tag", event);
+  showToastNotification(`Tag removed`);
+}
+
+// Drag and drop handlers
+const handleDragStart = (sectionIndex, itemIndex) => {
+  draggedItem.value = itemIndex;
+  draggedArray.value = sectionIndex;
+};
+
+const handleDragOver = () => {
+  // Visual feedback can be added if needed
+};
+
+const handleDragLeave = () => {
+  // Reset any visual feedback if needed
+};
+
+const handleDropItem = (targetSectionIndex, event) => {
+  event.preventDefault();
+  
+  if (draggedItem.value === null || draggedArray.value === null) return;
+
+  // Get source and target sections
+  const sourceSection = props.responseData.data[draggedArray.value];
+  const targetSection = props.responseData.data[targetSectionIndex];
+  
+  if (!sourceSection || !targetSection) return;
+  
+  // If it's the same section, don't do anything
+  if (draggedArray.value === targetSectionIndex) return;
+  
+  // Get the card we're moving
+  const cardToMove = { ...sourceSection.data[draggedItem.value] };
+  
+  // Remove card from source section
+  sourceSection.data.splice(draggedItem.value, 1);
+  
+  // Add card to target section
+  targetSection.data.push(cardToMove);
+  
+  // Show toast notification
+  showToastNotification(`Card moved to ${targetSection.title}`);
+  
+  // Reset drag state
   draggedItem.value = null;
   draggedArray.value = null;
 };
-const showEditCardUI = (index) => {
-  if (editSectionTitle.value === null) {
-    editSectionTitle.value = index;
-  }
-};
-const saveEdit = (index, data) => {
-  if (data.title.trim() !== "") {
-    editSectionTitle.value = null;
-    emit("edit-section-title", { index, newTitle: data.title });
+
+const handleInternalDrop = (targetSectionIndex, targetIndex) => {
+  if (draggedItem.value === null || draggedArray.value === null) return;
+  
+  // If moving within the same section
+  if (draggedArray.value === targetSectionIndex) {
+    const section = props.responseData.data[targetSectionIndex];
+    
+    // Skip if trying to drop to the same position
+    if (draggedItem.value === targetIndex) return;
+    
+    // Get the card we're moving
+    const cardToMove = { ...section.data[draggedItem.value] };
+    
+    // Remove card from its original position
+    section.data.splice(draggedItem.value, 1);
+    
+    // Add card to its new position
+    // If dragging from higher to lower index, we need to adjust the target index
+    section.data.splice(targetIndex, 0, cardToMove);
+    
+    showToastNotification('Card reordered');
   } else {
-    alert("Section title cannot be empty!");
+    // Moving between different sections
+    const sourceSection = props.responseData.data[draggedArray.value];
+    const targetSection = props.responseData.data[targetSectionIndex];
+    
+    // Get the card we're moving
+    const cardToMove = { ...sourceSection.data[draggedItem.value] };
+    
+    // Remove card from source section
+    sourceSection.data.splice(draggedItem.value, 1);
+    
+    // Add card to target section at specific position
+    targetSection.data.splice(targetIndex, 0, cardToMove);
+    
+    showToastNotification(`Card moved to ${targetSection.title}`);
   }
+  
+  // Reset drag state
+  draggedItem.value = null;
+  draggedArray.value = null;
 };
-const closeEditSection = () => {
-  editSectionTitle.value = null;
+
+// Toast notification helper
+const showToastNotification = (message) => {
+  toastMessage.value = message;
+  showToast.value = true;
+  
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    showToast.value = false;
+  }, 3000);
 };
 </script>
+
+<style>
+.tvd__toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.tvd__toast.show {
+  opacity: 1;
+}
+</style>

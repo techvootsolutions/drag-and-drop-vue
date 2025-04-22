@@ -1,281 +1,204 @@
 # drag-and-drop-vue
 
+A powerful drag-and-drop kanban board component for Vue 3.x with rich card features.
+
+- [Installation](#installation)
 - [Features](#features)
-- [Install](#install)
 - [Usage](#usage)
 - [Props](#available-props)
 - [Events](#events)
+- [Slots](#slots)
 
-The main usage of this package is for drag-and-drop functionality. The user create multiple sections and in that sections we provide the facilities to create multiple cards. all cards are swapable and also drag and drop in any section. 
-The user can also Edit and Delete card.
-the user can set there custom model for edit and delete, and there is also functionality for add custom fields in cards.
+## Features
 
-## features
+- Create and manage multiple sections (columns)
+- Drag and drop cards between sections
+- Rich card features:
+  - Title and description
+  - Priority levels (urgent, high, medium, low)
+  - Deadline dates
+  - File attachments (images, documents)
+  - Comments system
+  - Tags/labels
+- Dark mode support
+- Search and filter capabilities
 
-- Support drag and drop between different lists.
-- Support Swap functionality between two cards.
-- Provide custom facility to edit and delete card model.
-- User can customise the fields according to needs.
-
-## install
+## Installation
+```bash
+npm i dragandropvue
 ```
-npm i @techvootsolutions/drag-and-drop-vue
-```
-``` javascript
-import { DragAndDropVue } from '@techvootsolutions/drag-and-drop-vue';
+
+Then import and register the component:
+```javascript
+import { SimpleDragVue } from 'dragandropvue';
 
 export default {
-  // ...
   components: {
-    DragAndDropVue
+    SimpleDragVue
   }
-  // ...
 }
-```
-### Compiles and minifies for production
-```
-npm run build
 ```
 
 ## Usage
 
-<DragAndDropVue />
+Basic usage example:
 
-*value* prop if passed should be a response object
-
-``` html
-
-Vue
-
+```html
 <template>
-  <div>
-    <DragAndDropVue
-      :responseData="response"
-      :isCustomEdit="false"     // to enable custom edit and delete.
-      addCardTitle="+Add Card"
-      addSectionTitle="Add Section"
-      @add-card="addNewCardEvent"
-      @edit-card="editCardEvent"
-      @delete-card="deleteCardEvent"
-      @dragstart="dragEvent"
-      @dropItem="dropEvent"
-      @column-added="columnAdded"
-    />
-  </div>
+  <SimpleDragVue
+    :responseData="boardData"
+    :isModalOpened="modalOpened"
+    addCardTitle="+Add Card"
+    addSectionTitle="Add Section"
+    @add-card="handleAddCard"
+    @edit-card="handleEditCard"
+    @delete-card="handleDeleteCard"
+    @add-comment="handleAddComment"
+    @add-tag="handleAddTag"
+    @remove-tag="handleRemoveTag"
+    @move-card="handleMoveCard"
+  />
 </template>
 
 <script>
-import { DragAndDropVue } from '@techvootsolutions/drag-and-drop-vue';
-
 export default {
-  name: "App",
-  components: {
-    DragAndDropVue,
-  },
-  data(){
+  data() {
     return {
-      response: [
-        {
-          title: "Section 1",
-          data: [
-            {
-              // name:'dev'
-              title: "Card 1",
-              description: "<p>Description<p>",
-              attachment: [
-                {
-                  type: "image",
-                  url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
-                },
-                {
-                  type: "image",
-                  url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
-                },
-                {
-                  type: "video",
-                  url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                },
-              ],
-              deadlineDate: "Jan 11, 2024",
-            },
-            {
-              title: "Card 2",
-              description: "<p>Description<p>",
-              attachment: [
-                {
-                  type: "video",
-                  url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-                },
-                {
-                  type: "image",
-                  url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
-                },
-                {
-                  type: "pdf",
-                  url: "",
-                },
-              ],
-              deadlineDate: "Jan 11, 2024",
-            },
-            {
-              title: "Card 3",
-              description: "<p>Description<p>",
-              attachment: null,
-              deadlineDate: "Jan 11, 2024",
-            },
-          ],
-        },
-        {
-          title: "Section 2",
-          data: [
-            {
-              title: 66,
-              description: "<p>Description<p>",
-              attachment: null,
-              deadlineDate: "Jan 11, 2024",
-            },
-          ],
-        },
-        {
-          title: "Section 3",
-          data: [],
-        },
-      ],
+      boardData: {
+        data: [
+          {
+            title: "To Do",
+            data: [
+              {
+                title: "Design Updates",
+                description: "<p>Update the homepage design</p>",
+                attachment: null,
+                deadlineDate: "Apr 20, 2025",
+                priority: "high",
+                comments: [],
+                tags: ["design", "frontend"]
+              }
+            ]
+          },
+          {
+            title: "In Progress",
+            data: []
+          },
+          {
+            title: "Done",
+            data: []
+          }
+        ]
+      },
+      modalOpened: false
     }
   },
   methods: {
-    addNewCardEvent(event) {
-      // add card event
+    handleAddCard(event) {
+      // Handle new card addition
     },
-    editCardEvent(event) {
-      // edit card event
+    handleEditCard(event) {
+      // Handle card editing
     },
-    deleteCardEvent(event) {
-      // delete card event
-    },
-    dragEvent(event) {
-      // drag start event
-    },
-    dropEvent(event) {
-      // drop event
-    },
-    columnAdded(event) {
-      // add-section event
-    }
+    // ... other event handlers
   }
 }
-
 </script>
-
 ```
 
-## Available props
+## Available Props
 
-
-| Prop | Type  | Default | Description |
-| --- | --- | --- | --- |
-| `responseData` | `Array` | | `Array` or `Object` value of card data |
-| `addSectionTitle`  | `String` | `String` | Section Title property |
-| `addCardTitle` | `String` | `String` | Card Title property |
-| `isCustomEdit` | `Boolean` | `False` | Custom Edit Functionality, if need to do custom edit and delete event outside. |
-
+| Prop              | Type            | Default     | Description                                          |
+|-------------------|-----------------|-------------|------------------------------------------------------|
+| responseData      | Array\|Object   | required    | Board data structure with sections and cards         |
+| addSectionTitle   | String          | "Add Section"| Text for the add section button                     |
+| addCardTitle      | String          | "+Add Card" | Text for the add card button                        |
+| isCustomEdit      | Boolean         | false       | Enable custom edit functionality                     |
+| isModalOpened     | Boolean         | false       | Control edit modal visibility                        |
 
 ## Events
 
-These events are emitted on actions in the datepicker
+| Event         | Output                           | Description                                    |
+|---------------|----------------------------------|------------------------------------------------|
+| add-card      | { index, value }                | Emitted when a new card is added              |
+| edit-card     | { arrayIndex, itemIndex, ... }  | Emitted when a card is edited                 |
+| delete-card   | { arrayIndex, itemIndex }       | Emitted when a card is deleted                |
+| add-comment   | { arrayIndex, itemIndex, comment}| Emitted when a comment is added to a card     |
+| add-tag       | { arrayIndex, itemIndex, tag }  | Emitted when a tag is added to a card         |
+| remove-tag    | { arrayIndex, itemIndex, tag }  | Emitted when a tag is removed from a card     |
+| move-card     | { sourceSection, targetSection, sourceIndex, targetIndex } | Emitted when a card is moved |
 
-### `@add-card`
-Event to be emitted by component on add card.
+## Card Features
 
-```jsx
-<DragAndDropVue @add-card="addCard" />
-```
-```ts
-addCard(event) {
-  // add card event
+### Attachments
+Cards support file attachments with the following features:
+- Image preview
+- File download
+- Size and type information
+- Multiple attachments per card
+
+```html
+<!-- Example of card with attachment -->
+<script>
+const card = {
+  title: "Task with attachment",
+  attachment: {
+    name: "design.jpg",
+    type: "image/jpeg",
+    size: 1024000,
+    date: "2025-04-16",
+    data: "base64-encoded-data"
+  }
 }
+</script>
 ```
 
-### `@edit-card`
-Event to be emitted by component on edit card.
+### Comments
+Each card can have multiple comments with:
+- Author information
+- Timestamp
+- Comment text
+- Thread-like display
 
-```jsx
-<DragAndDropVue @edit-card="editCard" />
-```
-```ts
-editCard(event) {
-  // edit card event
-}
-```
+### Tags/Labels
+Cards support multiple tags for easy categorization and filtering:
+- Add/remove tags
+- Custom tag colors
+- Filter cards by tags
 
-### `@delete-card`
-Event to be emitted by component on delete card.
+### Priority Levels
+Cards can be assigned different priority levels:
+- Urgent
+- High
+- Medium
+- Low
 
-```jsx
-<DragAndDropVue @delete-card="deleteCard" />
-```
-```ts
-deleteCard(event) {
-  // delete card event
-}
-```
-
-### `@dragstart`
-Event to be emitted by component on drag start.
-
-```jsx
-<DragAndDropVue @dragstart="dragStart" />
-```
-```ts
-dragStart(event) {
-  // drag start event
-}
-```
-### `@dropItem`
-Event to be emitted by component on drop card.
-
-```jsx
-<DragAndDropVue @dropItem="dropCard" />
-```
-```ts
-dropCard(event) {
-  // drop event
-}
-```
-### `@column-added`
-Event to be emitted by component when columns added.
-
-```jsx
-<DragAndDropVue @column-added="columnAdded" />
-```
-```ts
-columnAdded(event) {
-  // section-add event
-}
-```
+Each priority level comes with its own visual indicator.
 
 ## Slots
 
-Slots will help you customize add card content. 
+Use slots to customize card content:
 
-Sometimes you need to add your custom field in card.
-An example would be to use custom input field :
-when you use this slot then you are not able to get add-card event.
-
-``` html
-<DragAndDropVue
-  :responseData="response"
-  :isCustomEdit="false"     // to enable custom edit and delete.
-  addCardTitle="+Add Card"
-  addSectionTitle="Add Section"
-  @edit-card="editCardEvent"
-  @delete-card="deleteCardEvent"
->
-  <template v-slot:customCard="{ item }">
-      <div>
-        {{ item }} // add your custom HTML
-      </div>
-    </template>
-</DragAndDropVue>
+```html
+<template v-slot:cardForm>
+  <!-- Custom form fields -->
+  <input type="text" placeholder="Custom field" />
+  <select>
+    <option value="option1">Option 1</option>
+    <option value="option2">Option 2</option>
+  </select>
+</template>
 ```
 
+## Development
+
+```bash
+# Compile and hot-reload for development
+npm run serve
+
+# Compile and minify for production
+npm run build
+
+# Lint and fix files
+npm run lint
+```

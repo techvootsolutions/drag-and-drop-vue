@@ -1,6 +1,48 @@
-import DragAndDropVue from "./components/SimpleDrag.vue";
-import EditModalVue from "./components/Modal/EditModal.vue";
-import DeleteConfirmationVue from "./components/Modal/DeleteConfirmation.vue";
-import './assets/css/style.css';
+// Import components
+import SimpleDrag from "./components/SimpleDrag.vue";
+import EditModal from "./components/Modal/EditModal.vue";
+import DeleteConfirmation from "./components/Modal/DeleteConfirmation.vue";
+import BoardSection from "./components/BoardSection.vue";
+import BoardCard from "./components/BoardCard.vue";
+import AddListForm from "./components/AddListForm.vue";
+import AddSectionButton from "./components/AddSectionButton.vue";
+import DragDropManager from "./components/DragDropManager.vue";
+import SectionHeader from "./components/section/SectionHeader.vue";
+import EmptyState from "./components/section/EmptyState.vue";
+import NewCardForm from "./components/section/NewCardForm.vue";
 
-export { DragAndDropVue, EditModalVue, DeleteConfirmationVue };
+import { resetDragClass, handleDragImage } from './utils/dragDropUtils.js';
+
+// Export components
+export {
+  SimpleDrag,
+  EditModal,
+  DeleteConfirmation,
+  BoardSection,
+  BoardCard,
+  AddListForm,
+  AddSectionButton,
+  DragDropManager,
+  SectionHeader,
+  EmptyState,
+  NewCardForm,
+  resetDragClass,
+  handleDragImage
+};
+
+// Export default
+export default {
+  SimpleDrag,
+  EditModal,
+  DeleteConfirmation,
+  BoardSection,
+  BoardCard,
+  AddListForm,
+  AddSectionButton,
+  DragDropManager,
+  SectionHeader,
+  EmptyState,
+  NewCardForm,
+  resetDragClass,
+  handleDragImage
+};
